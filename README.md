@@ -1,4 +1,4 @@
-<img src="./assets/Icon.png" alt="Icon" width="450" height="350" />
+<img src="./assets/Icon.png" alt="Icon" width="300" height="200" />
 
 # Nu-Factions
 
