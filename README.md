@@ -1,3 +1,5 @@
+<img src="./assets/Icon.png" alt="Icon" width="450" height="350" />
+
 # Nu-Factions
 
 Nu-Factions is a factions plugin for Spigot/Paper Minecraft servers.
