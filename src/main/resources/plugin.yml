@@ -1,0 +1,9 @@
+name: NuFactions
+version: '${project.version}'
+main: dev.ckay9.nu_factions.NuFactions
+api-version: 1.19
+authors: [ CKAY9 ]
+description: Play The Walls in any Minecraft world
+commands:
+  nufaction:
+    description: Interact with the Nu-Factions plugin
