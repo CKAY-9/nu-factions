@@ -16,11 +16,11 @@ public class NuFactions extends JavaPlugin {
   @Override
   public void onEnable() {
     Data.initializeDataFiles(); 
-    factions = Faction.generateFromSaveFile(Data.factionsData);
+    factions = Faction.generateFromSaveFile(Data.factions_data);
 
     // Commands
     this.getCommand("nufaction").setExecutor(new FactionCommand(this));
-    this.getCommand("nufaction").setTabCompleter(new FactionCompletor());
+    this.getCommand("nufaction").setTabCompleter(new FactionCompletor(this));
 
     // Listeners
     this.getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);

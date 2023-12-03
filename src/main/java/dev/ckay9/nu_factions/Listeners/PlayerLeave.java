@@ -20,6 +20,8 @@ public class PlayerLeave implements Listener {
   public void onPlayerLeave(PlayerQuitEvent event) {
     Player player = event.getPlayer();
     Faction f = Faction.getFactionFromMemberUUID(this.factions, player, false);
-    f.active_members.remove(player);
+    if (f != null) {
+      f.active_members.remove(player);
+    }
   }
 }
