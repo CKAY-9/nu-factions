@@ -1,5 +1,6 @@
 package dev.ckay9.nu_factions.Commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import dev.ckay9.nu_factions.Data;
 import dev.ckay9.nu_factions.NuFactions;
 import dev.ckay9.nu_factions.Factions.Claim;
 import dev.ckay9.nu_factions.Factions.Faction;
@@ -55,14 +57,14 @@ public class FactionCommand implements CommandExecutor {
     String type = args[1].toLowerCase();
 
     if (type.contains("new")) {
-      if (faction.faction_leader.toString().equalsIgnoreCase(player.getUniqueId().toString())) {
+      if (!faction.isPlayerLeader(player))
         player.sendMessage(Utils.formatText("&cYou need to be the faction leader to execute this command!"));
         return;
       }
 
       String claim_name = args[2];
       int claim_radius = Integer.parseInt(args[3]);
-      int required_power = (int)Math.floor(claim_radius / (10 * (faction.faction_claims.size() / 10)));
+      int required_power = (int)Math.floor(claim_radius / 10);
 
       if (required_power > faction.faction_power) {
         player.sendMessage(Utils.formatText("&cYour faction doesn't have enough power to create this claim!"));
@@ -86,6 +88,25 @@ public class FactionCommand implements CommandExecutor {
         claim_name);
       faction.faction_claims.add(new_claim);
       faction.saveFactionData();
+
+      player.sendMessage(Utils.formatText("&aSuccesfully created claim " + claim_name + "!"));
+    }
+
+  private void executeDelete(Faction faction, Player player) {
+    if (!faction.isPlayerLeader(player)) {
+      player.sendMessage(Utils.formatText("&cYou must be a faction leader to execute this command!"));
+      return;
+    }
+
+    faction.active_members.clear();
+    faction.faction_members.clear();
+    faction.faction_claims.clear();
+    Data.factions_data.set(faction.faction_leader.toString(), null);
+    try {
+      Data.factions_data.save(Data.factions_file);
+    } catch (IOException ex) {
+      player.sendMessage(Utils.formatText("&c" + ex.toString()));
+      Utils.getPlugin().getLogger().warning(ex.toString());
     }
   }
 
@@ -102,6 +123,11 @@ public class FactionCommand implements CommandExecutor {
 
       if (subcommand.contains("create")) {
         executeCreate(faction, player, args);
+        return false;
+      }
+
+      if (subcommand.contains("delete")) {
+        executeDelete(faction, player);
         return false;
       }
 

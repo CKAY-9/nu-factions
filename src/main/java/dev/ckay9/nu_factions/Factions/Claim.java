@@ -20,6 +20,16 @@ public class Claim {
     this.claim_name = name;
   } 
 
+  public boolean isPlayerInside(Player player) {
+    for (int i = 0; i < this.players_inside.size(); i++) {
+      Player temp = this.players_inside.get(i);
+      if (temp.getUniqueId().toString().equalsIgnoreCase(player.getUniqueId().toString())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // I love loops
   public static boolean doesClaimCollideWithOthers(Location starting, Location ending, NuFactions nu_factions) {
     for (int fi = 0; fi < nu_factions.factions.size(); fi++) {
@@ -40,6 +50,19 @@ public class Claim {
       }
     }
     return false;
+  }
+
+  public static FactionClaim getCurrentPlayerClaim(Player player, NuFactions nu_factions) {
+    for (int i = 0; i < nu_factions.factions.size(); i++) {
+      Faction faction = nu_factions.factions.get(i);
+      for (int k = 0; k < faction.faction_claims.size(); k++) {
+        Claim claim = faction.faction_claims.get(k);
+        if (claim.isPlayerInside(player)) {
+          return new FactionClaim(faction, claim);
+        }
+      }
+    }
+    return null;
   }
 
   public static FactionClaim getCurrentClaim(Location player_location, NuFactions nu_factions) {

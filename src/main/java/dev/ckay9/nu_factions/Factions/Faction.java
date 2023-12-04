@@ -38,6 +38,10 @@ public class Faction {
     }
   }
 
+  public boolean isPlayerLeader(Player player) {
+    return (player.getUniqueId().toString().equalsIgnoreCase(this.faction_leader.toString()));
+  }
+
   public void saveFactionData() {
     String id = this.faction_leader.toString();
     Data.factions_data.set(id + ".name", this.faction_name);
