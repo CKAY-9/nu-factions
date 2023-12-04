@@ -30,6 +30,11 @@ public class Claim {
     return false;
   }
 
+  public int calculateArea() {
+    int side_length = Math.abs(this.starting_positon.x) - Math.abs(this.ending_position.x);
+    return side_length * side_length;
+  }
+
   // I love loops
   public static boolean doesClaimCollideWithOthers(Location starting, Location ending, NuFactions nu_factions) {
     for (int fi = 0; fi < nu_factions.factions.size(); fi++) {

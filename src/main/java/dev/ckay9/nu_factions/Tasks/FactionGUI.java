@@ -41,6 +41,8 @@ public class FactionGUI {
     if (faction != null) {
       Score your_power = obj.getScore(Utils.formatText("&5Faction Power: " + faction.faction_power));
       your_power.setScore(running_score--);
+      Score required_power = obj.getScore(Utils.formatText("&5Power Cost: " + faction.calculateTotalPowerCost()));
+      required_power.setScore(running_score--);
       Score members = obj.getScore(Utils.formatText("&5Active Members: " + faction.faction_members.size()));
       members.setScore(running_score--);
     }

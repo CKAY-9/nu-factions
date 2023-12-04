@@ -55,6 +55,15 @@ public class Data {
       if (!config_data.isSet("config.show_faction_names")) {
         config_data.set("config.show_faction_names", true);
       }
+      if (!config_data.isSet("config.claim_decay_active")) {
+        config_data.set("config.claim_decay_active", true);
+      }
+      if (!config_data.isSet("config.claim_decay_in_minutes")) {
+        config_data.set("config.claim_decay_in_minutes", 30);
+      }
+      if (!config_data.isSet("config.entity_power_reward")) {
+        config_data.set("config.entity_power_reward", 5);
+      }
       
       config_data.save(config_file);
     } catch (IOException ex) {

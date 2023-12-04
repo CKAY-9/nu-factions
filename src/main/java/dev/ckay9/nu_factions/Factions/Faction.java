@@ -70,6 +70,33 @@ public class Faction {
     }
   }
 
+  public int calculateTotalPowerCost() {
+    int total = 0;
+    for (int i = 0; i < this.faction_claims.size(); i++) {
+      Claim claim = this.faction_claims.get(i);
+      total += (int)Math.floor(claim.calculateArea() / 25);
+    }
+    return total;
+  }
+
+  public void deletePowerlessClaims() {
+    for (int i = 0; i < this.faction_claims.size(); i++) {
+      Claim claim = this.faction_claims.get(i);
+      int cost = (int)Math.floor(claim.calculateArea() / 25);
+      if (cost > this.faction_power) {
+        for (int p = 0; p < this.active_members.size(); p++) {
+          Player player = this.active_members.get(p);
+          player.sendMessage(Utils.formatText("&cYou don't have enough power to maintain " + claim.claim_name + "! It is being removed from your claims."));
+        }
+        Data.factions_data.set(faction_leader.toString() + ".claims." + claim.claim_name, null);
+        this.faction_claims.remove(claim);
+        continue;
+      }
+      this.faction_power -= cost;
+    }
+    this.saveFactionData();
+  }
+
   public static Faction getFactionFromName(NuFactions nu_factions, String name) {
     for (int i = 0; i < nu_factions.factions.size(); i++) {
       Faction faction = nu_factions.factions.get(i);
