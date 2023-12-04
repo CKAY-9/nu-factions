@@ -1,6 +1,7 @@
 package dev.ckay9.nu_factions;
 
 import java.util.ArrayList;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.ckay9.nu_factions.Commands.FactionCommand;
@@ -11,6 +12,7 @@ import dev.ckay9.nu_factions.Listeners.PlayerInteraction;
 import dev.ckay9.nu_factions.Listeners.PlayerJoin;
 import dev.ckay9.nu_factions.Listeners.PlayerLeave;
 import dev.ckay9.nu_factions.Listeners.PlayerMove;
+import dev.ckay9.nu_factions.Utils.PlayerTask;
 
 public class NuFactions extends JavaPlugin {
   public ArrayList<Faction> factions = new ArrayList<Faction>();
@@ -31,6 +33,9 @@ public class NuFactions extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new PlayerDeath(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerInteraction(this), this);
+
+    // Loops
+    new PlayerTask(this);
   }
 
   @Override

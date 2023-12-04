@@ -110,9 +110,9 @@ public class Faction {
       ArrayList<Claim> claims = new ArrayList<Claim>();
       if (factions_data.getConfigurationSection(id + ".claims") != null) {
         for (String claim : factions_data.getConfigurationSection(id + ".claims").getKeys(false)) {
-          Vector3 start = new Vector3(factions_data.getInt(id + ".claims" + claim + ".start.x", 0), factions_data.getInt(id + ".claims" + claim + ".start.y", 0), factions_data.getInt(id + ".claims" + claim + ".start.z", 0));
-          Vector3 end = new Vector3(factions_data.getInt(id + ".claims" + claim + ".end.x", 0), factions_data.getInt(id + ".claims" + claim + ".end.y", 0), factions_data.getInt(id + ".claims" + claim + ".end.z", 0));
-          String claim_name = factions_data.getString(id + ".claims" + claim + ".name", "");
+          Vector3 start = new Vector3(factions_data.getInt(id + ".claims." + claim + ".start.x", 0), factions_data.getInt(id + ".claims." + claim + ".start.y", 0), factions_data.getInt(id + ".claims." + claim + ".start.z", 0));
+          Vector3 end = new Vector3(factions_data.getInt(id + ".claims." + claim + ".end.x", 0), factions_data.getInt(id + ".claims." + claim + ".end.y", 0), factions_data.getInt(id + ".claims." + claim + ".end.z", 0));
+          String claim_name = factions_data.getString(id + ".claims." + claim + ".name", "");
           claims.add(new Claim(start, end, claim_name));
         }
       }
