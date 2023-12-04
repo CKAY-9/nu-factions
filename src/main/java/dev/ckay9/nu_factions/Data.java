@@ -23,6 +23,8 @@ public class Data {
         }
       }
 
+      // TODO: Implement config file
+
       factions_data = YamlConfiguration.loadConfiguration(factions_file);
     } catch (IOException ex) {
       Utils.getPlugin().getLogger().warning(ex.toString());
