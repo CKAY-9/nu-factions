@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,6 +35,15 @@ public class FactionCommand implements CommandExecutor {
     }
     
     String faction_name = args[1];
+
+    for (int i = 0; i < this.factions.factions.size(); i++) {
+      Faction f = this.factions.factions.get(i);
+      if (f.faction_name.equals(faction_name)) {
+        player.sendMessage(Utils.formatText("&cThis faction name is already taken!"));
+        return;
+      }
+    }
+
     ArrayList<UUID> uuids = new ArrayList<UUID>();
     uuids.add(player.getUniqueId());
     Faction new_faction = new Faction(new ArrayList<Claim>(), uuids, faction_name, player.getUniqueId(), 100);
@@ -151,6 +161,49 @@ public class FactionCommand implements CommandExecutor {
     }
   }
 
+  private void executeInvite(Faction faction, Player player, String[] args) {
+    if (!faction.isPlayerLeader(player)) {
+      player.sendMessage(Utils.formatText("&cYou must be a faction leader to execute this command!"));
+      return;
+    }
+
+    String target_player_name = args[1];
+    Player target_player = Bukkit.getPlayer(target_player_name);
+    if (target_player == null) {
+      player.sendMessage(Utils.formatText("&cFailed to find player with specified name!"));
+      return;
+    }
+
+    faction.invites.add(target_player); 
+    target_player.sendMessage(Utils.formatText("&aYou have been invited to join " + faction.faction_name + "! Do /nufactions join " + faction.faction_name));
+    return;
+  }
+
+  private void executeJoin(Faction faction, Player player, String[] args) {
+    if (faction != null) {
+      player.sendMessage(Utils.formatText("&cYou must leave your current faction to join a new one: /nufaction leave"));
+      return;
+    }
+
+    String faction_name = args[1];
+    Faction f = Faction.getFactionFromName(this.factions, faction_name);
+    if (f == null) {
+      player.sendMessage(Utils.formatText("&cFailed to get faction with specified name!"));
+      return;
+    }
+
+    if (!f.invites.contains(player)) {
+      player.sendMessage(Utils.formatText("&cYou have not been invited to this faction!"));
+      return;
+    }
+
+    f.invites.remove(player);
+    player.sendMessage(Utils.formatText("&aYou have joined " + f.faction_name));
+    f.faction_members.add(player.getUniqueId());
+    f.active_members.add(player);
+    f.saveFactionData();
+  }
+
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     if (!(sender instanceof Player)) {
@@ -179,6 +232,16 @@ public class FactionCommand implements CommandExecutor {
 
       if (subcommand.contains("claim")) {
         executeClaim(player, args, faction);
+        return false;
+      }
+
+      if (subcommand.contains("invite")) {
+        executeInvite(faction, player, args);
+        return false;
+      }
+
+      if (subcommand.contains("join")) {
+        executeJoin(faction, player, args);
         return false;
       }
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.ckay9.nu_factions.Commands.FactionCommand;
-import dev.ckay9.nu_factions.Commands.FactionCompletor;
+import dev.ckay9.nu_factions.Commands.FactionCompleter;
 import dev.ckay9.nu_factions.Factions.Faction;
 import dev.ckay9.nu_factions.Listeners.PlayerDeath;
 import dev.ckay9.nu_factions.Listeners.PlayerInteraction;
@@ -28,7 +28,7 @@ public class NuFactions extends JavaPlugin {
 
     // Commands
     this.getCommand("nufaction").setExecutor(new FactionCommand(this));
-    this.getCommand("nufaction").setTabCompleter(new FactionCompletor(this));
+    this.getCommand("nufaction").setTabCompleter(new FactionCompleter(this));
 
     // Listeners
     this.getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);

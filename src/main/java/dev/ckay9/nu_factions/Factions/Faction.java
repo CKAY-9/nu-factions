@@ -21,6 +21,7 @@ public class Faction {
   public ArrayList<UUID> faction_members = new ArrayList<UUID>();
   public UUID faction_leader;
   public ArrayList<Player> active_members = new ArrayList<Player>();
+  public ArrayList<Player> invites = new ArrayList<Player>();
 
   public Faction(ArrayList<Claim> claims, ArrayList<UUID> members, String name, UUID leader, long faction_power) {
     this.faction_members = members;
@@ -69,7 +70,27 @@ public class Faction {
     }
   }
 
-  // idk
+  public static Faction getFactionFromName(NuFactions nu_factions, String name) {
+    for (int i = 0; i < nu_factions.factions.size(); i++) {
+      Faction faction = nu_factions.factions.get(i);
+      if (faction.faction_name.equals(name)) {
+        return faction;
+      }
+    }
+    return null;
+  } 
+
+  public static ArrayList<Faction> getAllFactionInvites(NuFactions nu_factions, Player player) {
+    ArrayList<Faction> factions = new ArrayList<Faction>();
+    for (int i = 0; i < nu_factions.factions.size(); i++) {
+      Faction faction = nu_factions.factions.get(i);
+      if (faction.invites.contains(player)) {
+        factions.add(faction);
+      }
+    }
+    return factions;
+  }
+
   public static Faction getFactionFromMemberUUID(NuFactions nu_factions, Player player, boolean add_to_active_members) {
     UUID player_uuid = player.getUniqueId();
     for (int i = 0; i < nu_factions.factions.size(); i++) {
