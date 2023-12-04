@@ -32,4 +32,14 @@ public class NuFactions extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerInteraction(this), this);
   }
+
+  @Override
+  public void onDisable() {
+    this.getLogger().info("Saving factions data...");
+    for (int i = 0; i < factions.size(); i++) {
+      Faction faction = factions.get(i);
+      faction.saveFactionData();
+    }
+    this.getLogger().info("Saved faction data!");
+  }
 }

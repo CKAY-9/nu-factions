@@ -57,12 +57,21 @@ public class FactionCommand implements CommandExecutor {
     String type = args[1].toLowerCase();
 
     if (type.contains("new")) {
-      if (!faction.isPlayerLeader(player))
+      if (!faction.isPlayerLeader(player)) {
         player.sendMessage(Utils.formatText("&cYou need to be the faction leader to execute this command!"));
         return;
       }
 
       String claim_name = args[2];
+
+      for (int i = 0; i < faction.faction_claims.size(); i++) {
+        Claim claim = faction.faction_claims.get(i); 
+        if (claim.claim_name.equals(claim_name)) {
+          player.sendMessage(Utils.formatText("&cClaims must have unique names!"));
+          return;
+        }
+      }
+
       int claim_radius = Integer.parseInt(args[3]);
       int required_power = (int)Math.floor(claim_radius / 10);
 
@@ -92,6 +101,37 @@ public class FactionCommand implements CommandExecutor {
       player.sendMessage(Utils.formatText("&aSuccesfully created claim " + claim_name + "!"));
     }
 
+    if (type.contains("delete")) {
+      if (!faction.isPlayerLeader(player)) {
+        player.sendMessage(Utils.formatText("&cYou need to be the faction leader to execute this command!"));
+        return;
+      }
+
+      String claim_name = args[2];
+      Claim claim = null;
+      for (int i = 0; i < faction.faction_claims.size(); i++) {
+        Claim c = faction.faction_claims.get(i);
+        if (c.claim_name.equals(claim_name)) {
+          claim = c;
+        }
+      }
+      if (claim == null) {
+        player.sendMessage(Utils.formatText("&cFailed to find claim with specified name!"));
+        return;
+      }
+      faction.faction_claims.remove(claim);
+      try {
+        Data.factions_data.set(faction.faction_leader.toString() + ".claims." + claim_name, null);
+        Data.factions_data.save(Data.factions_file);
+        faction.saveFactionData();
+        player.sendMessage(Utils.formatText("&aSuccesfully deleted claim " + claim_name));
+      } catch (IOException ex) {
+        player.sendMessage(Utils.formatText("&c" + ex.toString()));
+        Utils.getPlugin().getLogger().warning(ex.toString());
+      }
+    }
+  }
+
   private void executeDelete(Faction faction, Player player) {
     if (!faction.isPlayerLeader(player)) {
       player.sendMessage(Utils.formatText("&cYou must be a faction leader to execute this command!"));
@@ -104,6 +144,7 @@ public class FactionCommand implements CommandExecutor {
     Data.factions_data.set(faction.faction_leader.toString(), null);
     try {
       Data.factions_data.save(Data.factions_file);
+      player.sendMessage(Utils.formatText("&aSuccesfully deleted your faction!"));
     } catch (IOException ex) {
       player.sendMessage(Utils.formatText("&c" + ex.toString()));
       Utils.getPlugin().getLogger().warning(ex.toString());
