@@ -31,8 +31,11 @@ public class Claim {
   }
 
   public int calculateArea() {
-    int side_length = Math.abs(this.starting_positon.x) - Math.abs(this.ending_position.x);
-    return side_length * side_length;
+    return calculateSideLength() * calculateSideLength();
+  }
+
+  public int calculateSideLength() {
+    return Math.abs(this.starting_positon.x - this.ending_position.x);
   }
 
   // I love loops
