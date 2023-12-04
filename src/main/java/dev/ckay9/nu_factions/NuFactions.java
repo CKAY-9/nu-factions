@@ -12,7 +12,8 @@ import dev.ckay9.nu_factions.Listeners.PlayerInteraction;
 import dev.ckay9.nu_factions.Listeners.PlayerJoin;
 import dev.ckay9.nu_factions.Listeners.PlayerLeave;
 import dev.ckay9.nu_factions.Listeners.PlayerMove;
-import dev.ckay9.nu_factions.Utils.PlayerTask;
+import dev.ckay9.nu_factions.Tasks.FactionGUI;
+import dev.ckay9.nu_factions.Tasks.PlayerName;
 
 public class NuFactions extends JavaPlugin {
   public ArrayList<Faction> factions = new ArrayList<Faction>();
@@ -21,6 +22,8 @@ public class NuFactions extends JavaPlugin {
   @Override
   public void onEnable() {
     Data.initializeDataFiles(); 
+    Data.initializeConfigFiles();
+
     factions = Faction.generateFromSaveFile(Data.factions_data);
 
     // Commands
@@ -34,8 +37,13 @@ public class NuFactions extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerInteraction(this), this);
 
-    // Loops
-    new PlayerTask(this);
+    // Tasks
+    if (Data.config_data.getBoolean("config.show_faction_names", true)) {
+      new PlayerName(this);
+    }
+    if (Data.config_data.getBoolean("config.show_right_gui", true)) {
+      new FactionGUI(this);
+    }
   }
 
   @Override

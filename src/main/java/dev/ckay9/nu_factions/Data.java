@@ -11,6 +11,9 @@ public class Data {
   public static File factions_file;
   public static YamlConfiguration factions_data; 
 
+  public static File config_file;
+  public static YamlConfiguration config_data;
+
   public static void initializeDataFiles() {
     try {
       factions_file = new File(Utils.getPlugin().getDataFolder(), "factions_data.yml");
@@ -23,9 +26,37 @@ public class Data {
         }
       }
 
-      // TODO: Implement config file
-
       factions_data = YamlConfiguration.loadConfiguration(factions_file);
+    } catch (IOException ex) {
+      Utils.getPlugin().getLogger().warning(ex.toString());
+    }
+  }
+
+  public static void initializeConfigFiles() {
+    try {
+      config_file = new File(Utils.getPlugin().getDataFolder(), "config.yml");
+      if (!config_file.exists()) {
+        if (config_file.getParentFile().mkdirs()) {
+          Utils.getPlugin().getLogger().info("Created data folder");
+        }
+        if (config_file.createNewFile()) {
+          Utils.getPlugin().getLogger().info("Created config file");
+        }
+      }
+
+      config_data = YamlConfiguration.loadConfiguration(config_file);
+      
+      if (!config_data.isSet("config.show_right_gui")) {
+        config_data.set("config.show_right_gui", true);
+      }
+      if (!config_data.isSet("config.claim_addition_cost_percentage")) {
+        config_data.set("config.claim_addition_cost_percentage", 0.1);
+      }
+      if (!config_data.isSet("config.show_faction_names")) {
+        config_data.set("config.show_faction_names", true);
+      }
+      
+      config_data.save(config_file);
     } catch (IOException ex) {
       Utils.getPlugin().getLogger().warning(ex.toString());
     }

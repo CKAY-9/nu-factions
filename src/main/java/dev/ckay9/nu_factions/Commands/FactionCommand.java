@@ -73,7 +73,7 @@ public class FactionCommand implements CommandExecutor {
       }
 
       int claim_radius = Integer.parseInt(args[3]);
-      int required_power = (int)Math.floor(claim_radius / 10);
+      int required_power = (int)Math.floor(claim_radius / (1 - Data.config_data.getDouble("config.claim_addition_cost_percentage", 0.1)));
 
       if (required_power > faction.faction_power) {
         player.sendMessage(Utils.formatText("&cYour faction doesn't have enough power to create this claim!"));

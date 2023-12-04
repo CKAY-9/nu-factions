@@ -1,16 +1,17 @@
-package dev.ckay9.nu_factions.Utils;
+package dev.ckay9.nu_factions.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import dev.ckay9.nu_factions.NuFactions;
 import dev.ckay9.nu_factions.Factions.Faction;
+import dev.ckay9.nu_factions.Utils.Utils;
 
-public class PlayerTask {
+public class PlayerName {
   NuFactions factions;
   int task_id = 0;
 
-  public PlayerTask(NuFactions factions) {
+  public PlayerName(NuFactions factions) {
     this.factions = factions;
     
     this.task_id = Bukkit.getScheduler().scheduleSyncRepeatingTask(Utils.getPlugin(), () -> {
