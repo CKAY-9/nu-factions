@@ -58,6 +58,10 @@ public class Views {
     }
     player.openInventory(join_inventory);
   }
+  
+  public static void openInformationMenu(Player player, Faction faction) {
+    player.closeInventory();
+  }
 
   public static void openNavigationMenu(Player player, Faction faction) {
     player.closeInventory();
