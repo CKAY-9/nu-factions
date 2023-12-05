@@ -67,6 +67,7 @@ public class ClickHandler implements Listener {
           Views.openBoardMenu(player, this.factions);
           break;
         case "info":
+          Views.openInformationMenu(player, faction, factions);
           break;
       }
     }
