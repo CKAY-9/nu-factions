@@ -70,8 +70,8 @@ public class Faction {
     }
   }
 
-  public int calculateTotalPowerCost() {
-    int total = 0;
+  public long calculateTotalPowerCost() {
+    long total = 0;
     for (int i = 0; i < this.faction_claims.size(); i++) {
       Claim claim = this.faction_claims.get(i);
       total += Claim.getCost(claim.calculateSideLength());
@@ -79,10 +79,32 @@ public class Faction {
     return total;
   }
 
+  public long calculateTotalLandArea() {
+    long total = 0;
+    for (int i = 0; i < this.faction_claims.size(); i++) {
+      Claim claim = this.faction_claims.get(i);
+      total += claim.calculateArea();
+    }
+    return total;
+  }
+
+  public void delete(NuFactions factions) {
+    this.active_members.clear();
+    this.faction_members.clear();
+    this.faction_claims.clear();
+    Data.factions_data.set(this.faction_leader.toString(), null);
+    try {
+      Data.factions_data.save(Data.factions_file);
+    } catch (IOException ex) {
+      Utils.getPlugin().getLogger().warning(ex.toString());
+    }
+    factions.factions.remove(this);
+  }
+
   public void deletePowerlessClaims() {
     for (int i = 0; i < this.faction_claims.size(); i++) {
       Claim claim = this.faction_claims.get(i);
-      int cost = (int)Math.floor(claim.calculateArea() / 25);
+      long cost = (long)this.calculateTotalPowerCost();
       if (cost > this.faction_power) {
         for (int p = 0; p < this.active_members.size(); p++) {
           Player player = this.active_members.get(p);
