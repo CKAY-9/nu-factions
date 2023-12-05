@@ -64,6 +64,9 @@ public class Data {
       if (!config_data.isSet("config.entity_power_reward")) {
         config_data.set("config.entity_power_reward", 5);
       }
+      if (!config_data.isSet("config.player_power_reward")) {
+        config_data.set("config.player_power_reward", 20);
+      }
       
       config_data.save(config_file);
     } catch (IOException ex) {

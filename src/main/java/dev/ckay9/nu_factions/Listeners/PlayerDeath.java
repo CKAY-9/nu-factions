@@ -3,6 +3,7 @@ package dev.ckay9.nu_factions.Listeners;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import dev.ckay9.nu_factions.Data;
 import dev.ckay9.nu_factions.NuFactions;
 import dev.ckay9.nu_factions.Factions.Claim;
 import dev.ckay9.nu_factions.Factions.Faction;
@@ -39,7 +40,7 @@ public class PlayerDeath implements Listener {
       return;
     }
 
-    killer_faction.faction_power += 5;
+    killer_faction.faction_power += Data.config_data.getInt("config.player_power_reward", 20);
     killer.sendMessage(Utils.formatText("&aYou gained 5 power to your faction!"));
   }
 }

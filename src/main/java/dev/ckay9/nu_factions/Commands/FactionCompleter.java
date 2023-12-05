@@ -73,6 +73,7 @@ public class FactionCompleter implements TabCompleter {
       completors.add("new");
       if (faction.faction_claims.size() >= 1) {
         completors.add("delete");
+        completors.add("change");
       }
       return completors;
     }
@@ -84,13 +85,17 @@ public class FactionCompleter implements TabCompleter {
       return Collections.singletonList("radius");
     }
 
-    if (args.length == 3 && args[0].contains("claim") && args[1].contains("delete") && faction.isPlayerLeader(player)) {
+    if (args.length == 3 && args[0].contains("claim") && (args[1].contains("delete") || args[1].contains("change")) && faction.isPlayerLeader(player)) {
       ArrayList<String> completors = new ArrayList<String>();
       for (int i = 0; i < faction.faction_claims.size(); i++) {
         Claim claim = faction.faction_claims.get(i);
         completors.add(claim.claim_name);
       }
       return completors;
+    }
+
+    if (args.length == 4 && args[0].contains("claim") && args[1].contains("change") && faction.isPlayerLeader(player)) {
+      return Collections.singletonList("new_radius");
     }
 
     return null;

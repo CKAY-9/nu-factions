@@ -74,7 +74,7 @@ public class Faction {
     int total = 0;
     for (int i = 0; i < this.faction_claims.size(); i++) {
       Claim claim = this.faction_claims.get(i);
-      total += (int)Math.floor(claim.calculateSideLength() / 10);
+      total += Claim.getCost(claim.calculateSideLength());
     }
     return total;
   }

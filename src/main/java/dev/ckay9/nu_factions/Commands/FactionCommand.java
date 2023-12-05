@@ -20,7 +20,6 @@ import dev.ckay9.nu_factions.Factions.Faction;
 import dev.ckay9.nu_factions.Utils.Utils;
 import dev.ckay9.nu_factions.Utils.Vector3;
 
-
 public class FactionCommand implements CommandExecutor {
   public NuFactions factions;
 
@@ -65,15 +64,13 @@ public class FactionCommand implements CommandExecutor {
 
   private void executeClaim(Player player, String[] args, Faction faction) {
     String type = args[1].toLowerCase();
-
+    if (!faction.isPlayerLeader(player)) {
+      player.sendMessage(Utils.formatText("&cYou need to be the faction leader to execute this command!"));
+      return;
+    }
+    
+    String claim_name = args[2];
     if (type.contains("new")) {
-      if (!faction.isPlayerLeader(player)) {
-        player.sendMessage(Utils.formatText("&cYou need to be the faction leader to execute this command!"));
-        return;
-      }
-
-      String claim_name = args[2];
-
       for (int i = 0; i < faction.faction_claims.size(); i++) {
         Claim claim = faction.faction_claims.get(i); 
         if (claim.claim_name.equals(claim_name)) {
@@ -83,7 +80,7 @@ public class FactionCommand implements CommandExecutor {
       }
 
       int claim_radius = Integer.parseInt(args[3]);
-      int required_power = (int)Math.floor(claim_radius / (1 - Data.config_data.getDouble("config.claim_addition_cost_percentage", 0.1)));
+      int required_power = (int)Math.floor(claim_radius * 2 / (1 - Data.config_data.getDouble("config.claim_addition_cost_percentage", 0.1)));
 
       if (required_power > faction.faction_power) {
         player.sendMessage(Utils.formatText("&cYour faction doesn't have enough power to create this claim!"));
@@ -95,7 +92,7 @@ public class FactionCommand implements CommandExecutor {
       Location starting_location = player.getLocation().add(claim_radius, 320, claim_radius);
       Location ending_location = player.getLocation().add(-claim_radius, -64, -claim_radius);
 
-      boolean collides_with_others = Claim.doesClaimCollideWithOthers(starting_location, ending_location, this.factions);
+      boolean collides_with_others = Claim.doesClaimCollideWithOthers(starting_location, ending_location, this.factions, null);
       if (collides_with_others) {
         player.sendMessage(Utils.formatText("&cThis claim runs into already established claims!"));
         return;
@@ -112,12 +109,6 @@ public class FactionCommand implements CommandExecutor {
     }
 
     if (type.contains("delete")) {
-      if (!faction.isPlayerLeader(player)) {
-        player.sendMessage(Utils.formatText("&cYou need to be the faction leader to execute this command!"));
-        return;
-      }
-
-      String claim_name = args[2];
       Claim claim = null;
       for (int i = 0; i < faction.faction_claims.size(); i++) {
         Claim c = faction.faction_claims.get(i);
@@ -140,6 +131,52 @@ public class FactionCommand implements CommandExecutor {
         Utils.getPlugin().getLogger().warning(ex.toString());
       }
     }
+
+    if (type.contains("change")) {
+      Claim claim = null;
+      for (int i = 0; i < faction.faction_claims.size(); i++) {
+        Claim c = faction.faction_claims.get(i);
+        if (c.claim_name.equals(claim_name)) {
+          claim = c;
+        }
+      }
+      if (claim == null) {
+        player.sendMessage(Utils.formatText("&cFailed to find claim with specified name!"));
+        return;
+      }
+
+      int new_radius = Integer.parseInt(args[3]);
+      int cost = Claim.getCost(new_radius * 2);
+      if (cost > faction.faction_power) {
+        player.sendMessage(Utils.formatText("&cYour faction doesn't have enough power to do this change!"));
+        return;
+      }
+      
+      int prev_radius = (int)Math.round(claim.calculateSideLength() / 2);
+      Location starting = new Location(
+        player.getWorld(), 
+        claim.starting_positon.x - prev_radius, 
+        0, 
+        claim.starting_positon.z - prev_radius
+      ).add(new_radius, 320, new_radius);
+      Location ending = new Location(
+        player.getWorld(), 
+        claim.starting_positon.x - prev_radius, 
+        0, 
+        claim.starting_positon.z - prev_radius
+      ).add(-new_radius, -64, -new_radius);
+
+      boolean does_collide = Claim.doesClaimCollideWithOthers(starting, ending, this.factions, claim);
+      if (does_collide) {
+        player.sendMessage(Utils.formatText("&cThis change will run into other claims!"));
+        return;
+      }
+
+      claim.starting_positon = new Vector3(starting.getBlockX(), 320, starting.getBlockZ());
+      claim.ending_position = new Vector3(ending.getBlockX(), -64, ending.getBlockZ());
+      faction.saveFactionData();
+      player.sendMessage(Utils.formatText("&aSuccesfully updated claim!"));
+    }
   }
 
   private void executeDelete(Faction faction, Player player) {
@@ -159,6 +196,7 @@ public class FactionCommand implements CommandExecutor {
       player.sendMessage(Utils.formatText("&c" + ex.toString()));
       Utils.getPlugin().getLogger().warning(ex.toString());
     }
+    this.factions.factions.remove(faction);
   }
 
   private void executeInvite(Faction faction, Player player, String[] args) {

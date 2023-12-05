@@ -2,6 +2,8 @@ package dev.ckay9.nu_factions.Factions;
 
 import java.util.ArrayList;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -38,12 +40,19 @@ public class Claim {
     return Math.abs(this.starting_positon.x - this.ending_position.x);
   }
 
+  public static int getCost(int side_length) {
+    return (int)Math.floor(side_length / 10);
+  }
+
   // I love loops
-  public static boolean doesClaimCollideWithOthers(Location starting, Location ending, NuFactions nu_factions) {
+  public static boolean doesClaimCollideWithOthers(Location starting, Location ending, NuFactions nu_factions, @Nullable Claim to_ignore) {
     for (int fi = 0; fi < nu_factions.factions.size(); fi++) {
       Faction f = nu_factions.factions.get(fi);
       for (int c = 0; c < f.faction_claims.size(); c++) {
         Claim claim = f.faction_claims.get(c);
+        if (to_ignore != null && claim == to_ignore) {
+          continue;
+        }
         for (int x = claim.ending_position.x; x < claim.starting_positon.x; x++) {
           for (int z = claim.ending_position.z; z < claim.starting_positon.z; z++) {
             for (int xx = ending.getBlockX(); xx < starting.getBlockX(); xx++) {

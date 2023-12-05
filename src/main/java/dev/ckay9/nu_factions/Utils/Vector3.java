@@ -10,4 +10,11 @@ public class Vector3 {
     this.y = y;
     this.z = z;
   }
+
+  public Vector3 addToAll(int change) {
+    this.x -= change;
+    this.y -= change;
+    this.z -= change;
+    return this;
+  }
 }
