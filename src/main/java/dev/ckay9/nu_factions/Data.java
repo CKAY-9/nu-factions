@@ -67,6 +67,15 @@ public class Data {
       if (!config_data.isSet("config.player_power_reward")) {
         config_data.set("config.player_power_reward", 20);
       }
+      if (!config_data.isSet("config.interval_power_active")) {
+        config_data.set("config.interval_power_active", true);
+      }
+      if (!config_data.isSet("config.interval_power_reward")) {
+        config_data.set("config.interval_power_reward", 15);
+      }
+      if (!config_data.isSet("config.interval_power_time_in_minutes")) {
+        config_data.set("config.interval_power_time_in_minutes", 30);
+      }
       
       config_data.save(config_file);
     } catch (IOException ex) {

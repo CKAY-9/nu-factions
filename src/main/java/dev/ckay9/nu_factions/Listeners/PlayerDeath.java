@@ -31,16 +31,21 @@ public class PlayerDeath implements Listener {
     }
 
     Faction killer_faction = Faction.getFactionFromMemberUUID(this.factions, killer, false);
-    if (killer_faction == null) {
+    Faction player_faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+    if (player_faction == killer_faction) {
       return;
     }
 
     FactionClaim current_claim = Claim.getCurrentClaim(player.getLocation(), this.factions);
-    if (current_claim == null || current_claim.faction.faction_leader != killer_faction.faction_leader) {
-      return;
-    }
+    int to_add = Data.config_data.getInt("config.player_power_reward", 20);
 
-    killer_faction.faction_power += Data.config_data.getInt("config.player_power_reward", 20);
-    killer.sendMessage(Utils.formatText("&aYou gained 5 power to your faction!"));
+    if (player_faction != null && current_claim.faction == player_faction) {
+      player_faction.faction_power -= to_add;
+      player.sendMessage(Utils.formatText("&cYou have lost " + to_add + " power for your faction!"));
+    }
+    if (killer_faction != null && current_claim.faction == killer_faction) {
+      killer_faction.faction_power += to_add;
+      killer.sendMessage(Utils.formatText("&aYou have gained " + to_add + " power for your faction!"));
+    }
   }
 }

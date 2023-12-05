@@ -15,6 +15,7 @@ import dev.ckay9.nu_factions.Listeners.PlayerLeave;
 import dev.ckay9.nu_factions.Listeners.PlayerMove;
 import dev.ckay9.nu_factions.Tasks.ClaimDecay;
 import dev.ckay9.nu_factions.Tasks.FactionGUI;
+import dev.ckay9.nu_factions.Tasks.IntervalPower;
 import dev.ckay9.nu_factions.Tasks.PlayerName;
 
 public class NuFactions extends JavaPlugin {
@@ -49,6 +50,9 @@ public class NuFactions extends JavaPlugin {
     }
     if (Data.config_data.getBoolean("config.claim_decay_active", true)) {
       new ClaimDecay(this);
+    }
+    if (Data.config_data.getBoolean("config.interval_power_active", true)) {
+      new IntervalPower(this);
     }
   }
 
