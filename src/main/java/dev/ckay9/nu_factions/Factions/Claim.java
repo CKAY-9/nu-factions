@@ -53,6 +53,7 @@ public class Claim {
         if (to_ignore != null && claim == to_ignore) {
           continue;
         }
+
         for (int x = claim.ending_position.x; x < claim.starting_positon.x; x++) {
           for (int z = claim.ending_position.z; z < claim.starting_positon.z; z++) {
             for (int xx = ending.getBlockX(); xx < starting.getBlockX(); xx++) {
