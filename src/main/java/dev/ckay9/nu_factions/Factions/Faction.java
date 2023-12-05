@@ -39,6 +39,19 @@ public class Faction {
     }
   }
 
+  public void acceptInvite(Player player) {
+    if (!this.invites.contains(player)) {
+      player.sendMessage(Utils.formatText("&cYou have not been invited to this faction!"));
+      return;
+    }
+
+    this.invites.remove(player);
+    player.sendMessage(Utils.formatText("&aYou have joined " + this.faction_name));
+    this.faction_members.add(player.getUniqueId());
+    this.active_members.add(player);
+    this.saveFactionData();
+  }
+
   public boolean isPlayerLeader(Player player) {
     return (player.getUniqueId().toString().equalsIgnoreCase(this.faction_leader.toString()));
   }

@@ -1,5 +1,8 @@
 package dev.ckay9.nu_factions.Factions.GUI;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -7,11 +10,57 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import dev.ckay9.nu_factions.NuFactions;
 import dev.ckay9.nu_factions.Factions.Faction;
 import dev.ckay9.nu_factions.Utils.Utils;
 
 public class Views {
-  public static Inventory generateNavigationInventory(Player player, Faction faction) {
+  public static void openBoardMenu(Player player, NuFactions factions) {
+    player.closeInventory();
+    Inventory board_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Leaderboard"));
+    board_inventory.clear();
+    int runnnig_total = 10;
+    LinkedHashMap<String, Long> entries = Utils.getLeaderboard(factions);
+    int i = 0;
+    for (String key : entries.keySet()) {
+      if (i >= 5) {
+        break;
+      }
+      Faction faction = Faction.getFactionFromName(factions, key);
+      if (faction == null) {
+        continue;
+      }
+      ItemStack board_entry = new ItemStack(Material.RED_CONCRETE);
+      ItemMeta board_meta = board_entry.getItemMeta();
+      board_meta.setDisplayName(Utils.formatText("&c&l" + (i + 1) + ". " + key + ": " + faction.faction_power));
+      board_entry.setItemMeta(board_meta);
+      board_inventory.setItem(runnnig_total++, board_entry);
+      i++;
+    }
+    player.openInventory(board_inventory);
+  }
+
+  public static void openJoinMenu(Player player, NuFactions factions) {
+    player.closeInventory();
+    Inventory join_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Join Faction"));
+    join_inventory.clear();
+    ArrayList<Faction> invitations = Faction.getAllFactionInvites(factions, player);
+    for (int i = 0; i < invitations.size(); i++) {
+      if (i >= 54) {
+        break;
+      }
+      Faction faction = invitations.get(i);
+      ItemStack temp_item = new ItemStack(Material.PAPER, 1);
+      ItemMeta temp_meta = temp_item.getItemMeta();
+      temp_meta.setDisplayName("&aInvitation from " + faction.faction_name);
+      temp_item.setItemMeta(temp_meta);
+      join_inventory.setItem(i, temp_item);
+    }
+    player.openInventory(join_inventory);
+  }
+
+  public static void openNavigationMenu(Player player, Faction faction) {
+    player.closeInventory();
     Inventory nav_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Navigation"));
     nav_inventory.clear();
     int running_total = 10;
@@ -76,7 +125,7 @@ public class Views {
       nav_inventory.setItem(running_total++, info_button);
     }
 
-    return nav_inventory;
+    player.openInventory(nav_inventory);
   }
 
 }

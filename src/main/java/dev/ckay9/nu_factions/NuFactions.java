@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import dev.ckay9.nu_factions.Commands.FactionCommand;
 import dev.ckay9.nu_factions.Commands.FactionCompleter;
 import dev.ckay9.nu_factions.Factions.Faction;
+import dev.ckay9.nu_factions.Factions.GUI.ClickHandler;
 import dev.ckay9.nu_factions.Listeners.EntityDeath;
 import dev.ckay9.nu_factions.Listeners.PlayerDeath;
 import dev.ckay9.nu_factions.Listeners.PlayerInteraction;
@@ -40,6 +41,7 @@ public class NuFactions extends JavaPlugin {
     this.getServer().getPluginManager().registerEvents(new PlayerMove(this), this);
     this.getServer().getPluginManager().registerEvents(new PlayerInteraction(this), this);
     this.getServer().getPluginManager().registerEvents(new EntityDeath(this), this);
+    this.getServer().getPluginManager().registerEvents(new ClickHandler(this), this);
 
     // Tasks
     if (Data.config_data.getBoolean("config.show_faction_names", true)) {

@@ -2,10 +2,7 @@ package dev.ckay9.nu_factions.Commands;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -16,7 +13,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 import dev.ckay9.nu_factions.Data;
 import dev.ckay9.nu_factions.NuFactions;
@@ -220,44 +216,16 @@ public class FactionCommand implements CommandExecutor {
     }
 
     String faction_name = args[1];
-    Faction f = Faction.getFactionFromName(this.factions, faction_name);
-    if (f == null) {
+    Faction target_faction = Faction.getFactionFromName(this.factions, faction_name);
+    if (target_faction == null) {
       player.sendMessage(Utils.formatText("&cFailed to get faction with specified name!"));
       return;
     }
-
-    if (!f.invites.contains(player)) {
-      player.sendMessage(Utils.formatText("&cYou have not been invited to this faction!"));
-      return;
-    }
-
-    f.invites.remove(player);
-    player.sendMessage(Utils.formatText("&aYou have joined " + f.faction_name));
-    f.faction_members.add(player.getUniqueId());
-    f.active_members.add(player);
-    f.saveFactionData();
+    target_faction.acceptInvite(player); 
   }
 
   private void executeLeaderboard(Faction faction, Player player) {
-    HashMap<String, Long> entries = new HashMap<String, Long>();
-    LinkedHashMap<String, Long> sorted = new LinkedHashMap<String, Long>();
-    ArrayList<Long> list = new ArrayList<Long>();
-    for (int i = 0; i < this.factions.factions.size(); i++) {
-      Faction f = this.factions.factions.get(i);
-      entries.put(f.faction_name, f.calculateTotalPowerCost() + f.faction_power);
-    }
-    for (Map.Entry<String, Long> entry : entries.entrySet()) {
-      list.add(entry.getValue());
-    }
-    Collections.sort(list);
-    Collections.reverse(list);
-    for (int i = 0; i < list.size(); i++) {
-      for (Map.Entry<String, Long> entry : entries.entrySet()) {
-        if (entry.getValue().equals(list.get(i))) {
-          sorted.put(entry.getKey(), list.get(i));
-        }
-      }
-    }
+    LinkedHashMap<String, Long> sorted = Utils.getLeaderboard(this.factions); 
     player.sendMessage(Utils.formatText("&c&lTOP FACTIONS"));
     player.sendMessage(Utils.formatText("&c&l------------"));
     if (sorted.keySet().size() <= 0) {
@@ -308,8 +276,7 @@ public class FactionCommand implements CommandExecutor {
   }
 
   private void executeGUI(Player player, Faction faction) {
-    Inventory view = Views.generateNavigationInventory(player, faction);
-    player.openInventory(view);
+    Views.openNavigationMenu(player, faction);
   }
 
   @Override
