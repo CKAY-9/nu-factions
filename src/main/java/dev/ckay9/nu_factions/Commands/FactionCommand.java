@@ -16,11 +16,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import dev.ckay9.nu_factions.Data;
 import dev.ckay9.nu_factions.NuFactions;
 import dev.ckay9.nu_factions.Factions.Claim;
 import dev.ckay9.nu_factions.Factions.Faction;
+import dev.ckay9.nu_factions.Factions.GUI.Views;
 import dev.ckay9.nu_factions.Utils.Utils;
 import dev.ckay9.nu_factions.Utils.Vector3;
 
@@ -305,6 +307,11 @@ public class FactionCommand implements CommandExecutor {
     }
   }
 
+  private void executeGUI(Player player, Faction faction) {
+    Inventory view = Views.generateNavigationInventory(player, faction);
+    player.openInventory(view);
+  }
+
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     if (!(sender instanceof Player)) {
@@ -315,6 +322,10 @@ public class FactionCommand implements CommandExecutor {
       String subcommand = args[0].toLowerCase();
       Player player = (Player) sender;
       Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+
+      if (subcommand.length() <= 0 && args.length <= 0) {
+        executeGUI(player, faction);
+      }
 
       if (subcommand.contains("create")) {
         executeCreate(faction, player, args);
@@ -353,6 +364,11 @@ public class FactionCommand implements CommandExecutor {
 
       if (subcommand.contains("admin")) {
         executeAdmin(player, args);
+        return false;
+      }
+
+      if (subcommand.contains("gui")) {
+        executeGUI(player, faction);
         return false;
       }
 
