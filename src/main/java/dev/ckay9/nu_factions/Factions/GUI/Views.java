@@ -18,12 +18,59 @@ import dev.ckay9.nu_factions.Factions.FactionClaim;
 import dev.ckay9.nu_factions.Utils.Utils;
 
 public class Views {
+  private static void generateSliderInventory(Inventory inv, int lowest, int middle, int highest, long change) {
+    // Decrease
+    ItemStack decrease_five = new ItemStack(Material.RED_CONCRETE, 1);
+    ItemMeta df_meta = decrease_five.getItemMeta();
+    df_meta.setDisplayName(Utils.formatText("&c&l-" + highest));
+    decrease_five.setItemMeta(df_meta);
+    inv.setItem(ClickTypes.SLIDER_NEGATIVE_LOWEST, decrease_five);
+
+    ItemStack decrease_ten = new ItemStack(Material.RED_WOOL, 1);
+    ItemMeta dt_meta = decrease_ten.getItemMeta();
+    dt_meta.setDisplayName(Utils.formatText("&c&l-" + middle));
+    decrease_ten.setItemMeta(dt_meta);
+    inv.setItem(ClickTypes.SLIDER_NEGATIVE_MIDDLE, decrease_ten);
+
+    ItemStack decrease_twenty_five = new ItemStack(Material.RED_STAINED_GLASS, 1);
+    ItemMeta dtf_meta = decrease_twenty_five.getItemMeta();
+    dtf_meta.setDisplayName(Utils.formatText("&c&l-" + lowest));
+    decrease_twenty_five.setItemMeta(dtf_meta);
+    inv.setItem(ClickTypes.SLIDER_NEGATIVE_HIGHEST, decrease_twenty_five);
+
+    // Information
+    ItemStack info = new ItemStack(Material.WHITE_CONCRETE, 1);
+    ItemMeta info_meta = info.getItemMeta();
+    info_meta.setDisplayName(Utils.formatText("&lCONFIRM CHANGE: " + change));
+    info.setItemMeta(info_meta);
+    inv.setItem(ClickTypes.SLIDER_CONFIRM, info);
+
+    // Increase 
+    ItemStack increase_five = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
+    ItemMeta if_meta = increase_five.getItemMeta();
+    if_meta.setDisplayName(Utils.formatText("&a&l+" + lowest));
+    increase_five.setItemMeta(if_meta);
+    inv.setItem(ClickTypes.SLIDER_POSITIVE_LOWEST, increase_five);
+
+    ItemStack increase_ten = new ItemStack(Material.GREEN_WOOL, 1);
+    ItemMeta it_meta = increase_ten.getItemMeta();
+    it_meta.setDisplayName(Utils.formatText("&a&l+" + middle));
+    increase_ten.setItemMeta(it_meta);
+    inv.setItem(ClickTypes.SLIDER_NEGATIVE_MIDDLE, increase_ten);
+
+    ItemStack increase_twenty_five = new ItemStack(Material.GREEN_CONCRETE, 1);
+    ItemMeta itf_meta = increase_twenty_five.getItemMeta();
+    itf_meta.setDisplayName(Utils.formatText("&a&l+" + highest));
+    increase_twenty_five.setItemMeta(itf_meta);
+    inv.setItem(ClickTypes.SLIDER_POSITIVE_HIGHEST, increase_twenty_five);
+  }
+
   public static void openBoardMenu(Player player, NuFactions factions) {
     player.closeInventory();
     Inventory board_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Leaderboard"));
     board_inventory.clear();
 
-    board_inventory.setItem(18, Utils.generateBackButton());
+    board_inventory.setItem(ClickTypes.BACK_CLOSE_SMALL_MENU, Utils.generateBackButton());
 
     int runnnig_total = 10;
     LinkedHashMap<String, Long> entries = Utils.getLeaderboard(factions);
@@ -51,7 +98,7 @@ public class Views {
     Inventory join_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Join Faction"));
     join_inventory.clear();
 
-    join_inventory.setItem(45, Utils.generateBackButton());
+    join_inventory.setItem(ClickTypes.BACK_CLOSE_LARGE_MENU, Utils.generateBackButton());
 
     ArrayList<Faction> invitations = Faction.getAllFactionInvites(factions, player);
     for (int i = 0; i < invitations.size(); i++) {
@@ -76,7 +123,7 @@ public class Views {
     Inventory claim_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Claims"));
     claim_inventory.clear();
 
-    claim_inventory.setItem(45, Utils.generateBackButton());
+    claim_inventory.setItem(ClickTypes.BACK_CLOSE_LARGE_MENU, Utils.generateBackButton());
     
     ItemStack new_claim = new ItemStack(Material.MAP, 1);
     ItemMeta new_claim_meta = new_claim.getItemMeta();
@@ -109,52 +156,8 @@ public class Views {
     }
     
     Inventory claim_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Claim " + claim.claim_name));
-    claim_inventory.setItem(18, Utils.generateBackButton());
-
-    // Decrease radius
-    ItemStack decrease_five = new ItemStack(Material.RED_CONCRETE, 1);
-    ItemMeta df_meta = decrease_five.getItemMeta();
-    df_meta.setDisplayName(Utils.formatText("&c&l-25 BLOCKS"));
-    decrease_five.setItemMeta(df_meta);
-    claim_inventory.setItem(10, decrease_five);
-
-    ItemStack decrease_ten = new ItemStack(Material.RED_WOOL, 1);
-    ItemMeta dt_meta = decrease_ten.getItemMeta();
-    dt_meta.setDisplayName(Utils.formatText("&c&l-10 BLOCKS"));
-    decrease_ten.setItemMeta(dt_meta);
-    claim_inventory.setItem(11, decrease_ten);
-
-    ItemStack decrease_twenty_five = new ItemStack(Material.RED_STAINED_GLASS, 1);
-    ItemMeta dtf_meta = decrease_twenty_five.getItemMeta();
-    dtf_meta.setDisplayName(Utils.formatText("&c&l-5 BLOCKS"));
-    decrease_twenty_five.setItemMeta(dtf_meta);
-    claim_inventory.setItem(12, decrease_twenty_five);
-
-    // Information
-    ItemStack info = new ItemStack(Material.WHITE_CONCRETE, 1);
-    ItemMeta info_meta = info.getItemMeta();
-    info_meta.setDisplayName(Utils.formatText("&lCONFIRM: " + claim.radius + "x" + claim.radius));
-    info.setItemMeta(info_meta);
-    claim_inventory.setItem(13, info);
-
-    // Increase radius
-    ItemStack increase_five = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
-    ItemMeta if_meta = increase_five.getItemMeta();
-    if_meta.setDisplayName(Utils.formatText("&a&l+5 BLOCKS"));
-    increase_five.setItemMeta(if_meta);
-    claim_inventory.setItem(14, increase_five);
-
-    ItemStack increase_ten = new ItemStack(Material.GREEN_WOOL, 1);
-    ItemMeta it_meta = increase_ten.getItemMeta();
-    it_meta.setDisplayName(Utils.formatText("&a&l+10 BLOCKS"));
-    increase_ten.setItemMeta(it_meta);
-    claim_inventory.setItem(15, increase_ten);
-
-    ItemStack increase_twenty_five = new ItemStack(Material.GREEN_CONCRETE, 1);
-    ItemMeta itf_meta = increase_twenty_five.getItemMeta();
-    itf_meta.setDisplayName(Utils.formatText("&a&l+25 BLOCKS"));
-    increase_twenty_five.setItemMeta(itf_meta);
-    claim_inventory.setItem(16, increase_twenty_five);
+    claim_inventory.setItem(ClickTypes.BACK_CLOSE_SMALL_MENU, Utils.generateBackButton());
+    generateSliderInventory(claim_inventory, 5, 10, 25, claim.radius);
 
     player.openInventory(claim_inventory);
   }
@@ -168,7 +171,7 @@ public class Views {
     Inventory info_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Information"));
     info_inventory.clear();
 
-    info_inventory.setItem(18, Utils.generateBackButton());
+    info_inventory.setItem(ClickTypes.BACK_CLOSE_SMALL_MENU, Utils.generateBackButton());
 
     ItemStack name_block = new ItemStack(Material.SKELETON_SKULL, 1);
     ItemMeta name_meta = name_block.getItemMeta();
@@ -208,8 +211,8 @@ public class Views {
     Inventory invite_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Invite Player"));
     invite_inventory.clear();
 
-    invite_inventory.setItem(45, Utils.generateBackButton());
-    if (Bukkit.getOnlinePlayers().size() > 45) {
+    invite_inventory.setItem(ClickTypes.BACK_CLOSE_LARGE_MENU, Utils.generateBackButton());
+    if (Bukkit.getOnlinePlayers().size() > ClickTypes.BACK_CLOSE_LARGE_MENU) {
       invite_inventory.setItem(53, Utils.generateNextButton());
     }
  
@@ -241,31 +244,25 @@ public class Views {
 
     Inventory admin_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Admin"));
     admin_inventory.clear();
-    admin_inventory.setItem(18, Utils.generateBackButton());
+    admin_inventory.setItem(ClickTypes.BACK_CLOSE_SMALL_MENU, Utils.generateBackButton());
 
-    ItemStack add_power = new ItemStack(Material.GREEN_CONCRETE, 1);
-    ItemMeta add_meta = add_power.getItemMeta();
-    add_meta.setDisplayName(Utils.formatText("&a&lADD POWER"));
-    add_power.setItemMeta(add_meta);
-    admin_inventory.setItem(10, add_power);
-
-    ItemStack remove_power = new ItemStack(Material.RED_CONCRETE, 1);
-    ItemMeta remove_meta = remove_power.getItemMeta();
-    remove_meta.setDisplayName(Utils.formatText("&c&lREMOVE POWER"));
-    remove_power.setItemMeta(remove_meta);
-    admin_inventory.setItem(11, remove_power);
+    ItemStack change_power = new ItemStack(Material.GREEN_CONCRETE, 1);
+    ItemMeta change_meta = change_power.getItemMeta();
+    change_meta.setDisplayName(Utils.formatText("&a&lADD POWER"));
+    change_power.setItemMeta(change_meta);
+    admin_inventory.setItem(10, change_power);
 
     ItemStack set_power = new ItemStack(Material.WHITE_CONCRETE, 1);
     ItemMeta set_meta = set_power.getItemMeta();
     set_meta.setDisplayName(Utils.formatText("&lSET POWER"));
     set_power.setItemMeta(set_meta);
-    admin_inventory.setItem(12, set_power);
+    admin_inventory.setItem(11, set_power);
 
     ItemStack delete_faction = new ItemStack(Material.BARRIER, 1);
     ItemMeta delete_meta = delete_faction.getItemMeta();
     delete_meta.setDisplayName(Utils.formatText("&c&lDELETE FACTION"));
     delete_faction.setItemMeta(delete_meta);
-    admin_inventory.setItem(13, delete_faction);
+    admin_inventory.setItem(12, delete_faction);
 
     player.openInventory(admin_inventory);
   }
@@ -278,12 +275,12 @@ public class Views {
 
     Inventory factions_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Choose a Faction"));
     factions_inventory.clear();
-    factions_inventory.setItem(45, Utils.generateBackButton());
+    factions_inventory.setItem(ClickTypes.BACK_CLOSE_LARGE_MENU, Utils.generateBackButton());
   
     // TODO: get page number and proper factions
     int inv_index = 0;
     for (int i = 0; i < factions.factions.size(); i++) {
-      if (inv_index >= 45) {
+      if (inv_index >= ClickTypes.BACK_CLOSE_LARGE_MENU) {
         break;
       }
 
@@ -301,14 +298,28 @@ public class Views {
     player.openInventory(factions_inventory);
   }
 
+  public static void openChangePowerMenu(Player player, Faction faction) {
+    player.closeInventory();
+    if (!player.isOp()) {
+      return;
+    }
+
+    Inventory power_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Change " + faction.faction_name));
+    power_inventory.clear();
+    power_inventory.setItem(ClickTypes.BACK_CLOSE_SMALL_MENU, Utils.generateBackButton());
+
+    generateSliderInventory(power_inventory, 10, 25, 50, faction.faction_power);
+
+    player.openInventory(power_inventory);
+  }
+
   public static void openNavigationMenu(Player player, Faction faction) {
     player.closeInventory();
     Inventory nav_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Navigation"));
     nav_inventory.clear();
     int running_total = 10;
 
-    ItemStack close = Utils.generateBackButton();
-    nav_inventory.setItem(18, close);
+    nav_inventory.setItem(ClickTypes.BACK_CLOSE_SMALL_MENU, Utils.generateBackButton());
 
     ItemStack board_button = new ItemStack(Material.BLACK_CONCRETE, 1);
     ItemMeta board_meta = board_button.getItemMeta();

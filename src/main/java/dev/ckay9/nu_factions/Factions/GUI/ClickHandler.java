@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+
 public class ClickHandler implements Listener {
   NuFactions factions;
 
@@ -26,7 +27,7 @@ public class ClickHandler implements Listener {
 
   private void handleNavigation(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
-    if (event.getSlot() == 18) {
+    if (event.getSlot() == ClickTypes.BACK_CLOSE_SMALL_MENU) {
       player.closeInventory();
       return;
     }
@@ -90,7 +91,7 @@ public class ClickHandler implements Listener {
   private void handleJoin(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
 
-    if (event.getSlot() == 45) {
+    if (event.getSlot() == ClickTypes.BACK_CLOSE_LARGE_MENU) {
       Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
       return;
     }
@@ -113,7 +114,7 @@ public class ClickHandler implements Listener {
   private void handleLeaderboard(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
 
-    if (event.getSlot() == 18) {
+    if (event.getSlot() == ClickTypes.BACK_CLOSE_SMALL_MENU) {
       Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
       return;
     }
@@ -122,7 +123,7 @@ public class ClickHandler implements Listener {
   private void handleInfo(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
 
-    if (event.getSlot() == 18) {
+    if (event.getSlot() == ClickTypes.BACK_CLOSE_SMALL_MENU) {
       Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
       return;
     }
@@ -136,8 +137,8 @@ public class ClickHandler implements Listener {
       return;
     }
 
-    if (event.getSlot() == 45) {
-      if (Bukkit.getOnlinePlayers().size() > 45) {
+    if (event.getSlot() == ClickTypes.BACK_CLOSE_LARGE_MENU) {
+      if (Bukkit.getOnlinePlayers().size() > ClickTypes.BACK_CLOSE_LARGE_MENU) {
         Views.openInviteMenu(player, faction);
         return;
       } 
@@ -162,7 +163,7 @@ public class ClickHandler implements Listener {
       return;
     }
 
-    if (event.getSlot() == 45) {
+    if (event.getSlot() == ClickTypes.BACK_CLOSE_LARGE_MENU) {
       Views.openNavigationMenu(player, faction);
     }
 
@@ -187,7 +188,7 @@ public class ClickHandler implements Listener {
   private void handleClaim(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
     Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
-    if (event.getSlot() == 18) {
+    if (event.getSlot() == ClickTypes.BACK_CLOSE_SMALL_MENU) {
       Views.openClaimChoiceMenu(player, faction, this.factions);
       return;
     }
@@ -240,25 +241,65 @@ public class ClickHandler implements Listener {
     Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
     
     int slot = event.getSlot();
-    if (slot == 18) {
+    if (slot == ClickTypes.BACK_CLOSE_SMALL_MENU) {
       Views.openNavigationMenu(player, faction);
       return;
     }
 
     switch (slot) {
       case 10:
-        Views.openFactionSelectMenu(player, this.factions, AdminView.ADD_POWER); 
+        Views.openFactionSelectMenu(player, this.factions, AdminView.CHANGE_POWER); 
         break;
       case 11:
-        Views.openFactionSelectMenu(player, this.factions, AdminView.REMOVE_POWER);
+        player.closeInventory();
+        player.sendMessage(Utils.formatText("&aYou can set a faction's power level by using the command: /nufactions admin set-power FACTION VALUE")); 
         break;
       case 12:
-        Views.openFactionSelectMenu(player, this.factions, AdminView.SET_POWER);
-        break;
-      case 13:
         Views.openFactionSelectMenu(player, this.factions, AdminView.DELETE_FACTION);
         break;
     }    
+  }
+
+  private void handlePower(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+    if (!player.isOp()) {
+      return;
+    }
+
+    // i.e Nu-Factions: Change FACTION
+    String faction_name = event.getView().getTitle().split(" ")[2];
+    Faction faction = Faction.getFactionFromName(this.factions, faction_name);
+    if (faction == null) {
+      return;
+    }
+
+    int slot = event.getSlot();
+    switch (slot) {
+      case 10:
+        faction.faction_power -= 50;
+        break;
+      case 11:
+        faction.faction_power -= 25;
+        break;
+      case 12:
+        faction.faction_power -= 10;
+        break;
+      case 13:
+        player.closeInventory();
+        player.sendMessage(Utils.formatText("&aSuccessfully updated faction power!"));
+        break;
+      case 14:
+        faction.faction_power += 10;
+        break;
+      case 15:
+        faction.faction_power += 25;
+        break;
+      case 16:
+        faction.faction_power += 50;
+        break;
+    }
+    Views.openChangePowerMenu(player, faction);
+
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -298,6 +339,10 @@ public class ClickHandler implements Listener {
     }
     if (inv_title.contains("Admin")) {
       handleAdmin(event);
+      return;
+    }
+    if (inv_title.contains("Change")) {
+      handlePower(event);
       return;
     }
     if (inv_title.contains("Claims")) {
