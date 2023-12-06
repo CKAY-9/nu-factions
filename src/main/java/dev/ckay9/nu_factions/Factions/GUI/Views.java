@@ -70,14 +70,91 @@ public class Views {
 
   public static void openClaimChoiceMenu(Player player, Faction faction, NuFactions factions) {
     player.closeInventory();
-    if (faction == null) {
-      return;
-    }
-    if (!faction.isPlayerLeader(player)) { 
+    if (faction == null || !faction.isPlayerLeader(player)) {
       return;
     }
     Inventory claim_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Claims"));
     claim_inventory.clear();
+
+    claim_inventory.setItem(45, Utils.generateBackButton());
+    
+    ItemStack new_claim = new ItemStack(Material.MAP, 1);
+    ItemMeta new_claim_meta = new_claim.getItemMeta();
+    new_claim_meta.setDisplayName(Utils.formatText("&a&lNEW CLAIM"));
+    new_claim.setItemMeta(new_claim_meta);
+    claim_inventory.setItem(49, new_claim);
+
+    int inv_index = 0;
+    for (int i = 0; i < faction.faction_claims.size(); i++) {
+      if (inv_index > 54) {
+        break;
+      }
+
+      Claim claim = faction.faction_claims.get(i);
+      ItemStack claim_item = new ItemStack(Material.NETHER_STAR, 1);
+      ItemMeta claim_meta = claim_item.getItemMeta();
+      claim_meta.setDisplayName(Utils.formatText("&a" + claim.claim_name + ": " + claim.calculateSideLength() + "x" + claim.calculateSideLength()));
+      claim_item.setItemMeta(claim_meta);
+      claim_inventory.setItem(inv_index, claim_item);
+      inv_index++;
+    }
+
+    player.openInventory(claim_inventory);
+  }
+
+  public static void openSpecificClaimMenu(Player player, Faction faction, Claim claim, NuFactions factions) {
+    player.closeInventory();
+    if (faction == null || !faction.isPlayerLeader(player) || claim == null) {
+      return;
+    }
+    
+    Inventory claim_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Claim " + claim.claim_name));
+    claim_inventory.setItem(18, Utils.generateBackButton());
+
+    // Decrease radius
+    ItemStack decrease_five = new ItemStack(Material.RED_CONCRETE, 1);
+    ItemMeta df_meta = decrease_five.getItemMeta();
+    df_meta.setDisplayName(Utils.formatText("&c&l-25 BLOCKS"));
+    decrease_five.setItemMeta(df_meta);
+    claim_inventory.setItem(10, decrease_five);
+
+    ItemStack decrease_ten = new ItemStack(Material.RED_WOOL, 1);
+    ItemMeta dt_meta = decrease_ten.getItemMeta();
+    dt_meta.setDisplayName(Utils.formatText("&c&l-10 BLOCKS"));
+    decrease_ten.setItemMeta(dt_meta);
+    claim_inventory.setItem(11, decrease_ten);
+
+    ItemStack decrease_twenty_five = new ItemStack(Material.RED_STAINED_GLASS, 1);
+    ItemMeta dtf_meta = decrease_twenty_five.getItemMeta();
+    dtf_meta.setDisplayName(Utils.formatText("&c&l-5 BLOCKS"));
+    decrease_twenty_five.setItemMeta(dtf_meta);
+    claim_inventory.setItem(12, decrease_twenty_five);
+
+    // Information
+    ItemStack info = new ItemStack(Material.WHITE_CONCRETE, 1);
+    ItemMeta info_meta = info.getItemMeta();
+    info_meta.setDisplayName(Utils.formatText("&lCONFIRM: " + claim.radius + "x" + claim.radius));
+    info.setItemMeta(info_meta);
+    claim_inventory.setItem(13, info);
+
+    // Increase radius
+    ItemStack increase_five = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
+    ItemMeta if_meta = increase_five.getItemMeta();
+    if_meta.setDisplayName(Utils.formatText("&a&l+5 BLOCKS"));
+    increase_five.setItemMeta(if_meta);
+    claim_inventory.setItem(14, increase_five);
+
+    ItemStack increase_ten = new ItemStack(Material.GREEN_WOOL, 1);
+    ItemMeta it_meta = increase_ten.getItemMeta();
+    it_meta.setDisplayName(Utils.formatText("&a&l+10 BLOCKS"));
+    increase_ten.setItemMeta(it_meta);
+    claim_inventory.setItem(15, increase_ten);
+
+    ItemStack increase_twenty_five = new ItemStack(Material.GREEN_CONCRETE, 1);
+    ItemMeta itf_meta = increase_twenty_five.getItemMeta();
+    itf_meta.setDisplayName(Utils.formatText("&a&l+25 BLOCKS"));
+    increase_twenty_five.setItemMeta(itf_meta);
+    claim_inventory.setItem(16, increase_twenty_five);
 
     player.openInventory(claim_inventory);
   }
@@ -135,20 +212,15 @@ public class Views {
     if (Bukkit.getOnlinePlayers().size() > 45) {
       invite_inventory.setItem(53, Utils.generateNextButton());
     }
-  
+ 
+    ArrayList<Player> players = Utils.getOnlinePlayers();
+    if (starting_from_player_index > players.size()) {
+      return;
+    }
     int inv_index = 0;
-    int iter_index = 0;
-    for (Player ply : Bukkit.getOnlinePlayers()) {
-      // this skips unwanted players
-      if (iter_index < starting_from_player_index) {
-        iter_index++;
-        continue;
-      }
-      if (inv_index >= 45) {
-        break;
-      }
-
-      ItemStack player_head = new ItemStack(Material.SKELETON_SKULL, 1);
+    for (int i = starting_from_player_index; i < players.size(); i++) {
+      Player ply = players.get(i); 
+      ItemStack player_head = new ItemStack(Material.PLAYER_HEAD, 1);
       SkullMeta head_meta = (SkullMeta)player_head.getItemMeta();
       head_meta.setDisplayName(ply.getName());
       head_meta.setOwningPlayer(Bukkit.getOfflinePlayer(ply.getName()));
@@ -156,7 +228,6 @@ public class Views {
       invite_inventory.setItem(inv_index, player_head);
 
       inv_index++;
-      iter_index++;
     } 
 
     player.openInventory(invite_inventory);

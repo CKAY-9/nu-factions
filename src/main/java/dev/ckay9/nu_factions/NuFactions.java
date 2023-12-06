@@ -31,8 +31,8 @@ public class NuFactions extends JavaPlugin {
     factions = Faction.generateFromSaveFile(Data.factions_data);
 
     // Commands
-    this.getCommand("nufaction").setExecutor(new FactionCommand(this));
-    this.getCommand("nufaction").setTabCompleter(new FactionCompleter(this));
+    this.getCommand("nufactions").setExecutor(new FactionCommand(this));
+    this.getCommand("nufactions").setTabCompleter(new FactionCompleter(this));
 
     // Listeners
     this.getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);

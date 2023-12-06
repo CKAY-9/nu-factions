@@ -5,7 +5,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 import dev.ckay9.nu_factions.NuFactions;
+import dev.ckay9.nu_factions.Factions.Claim;
 import dev.ckay9.nu_factions.Factions.Faction;
+import dev.ckay9.nu_factions.Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,6 +69,7 @@ public class ClickHandler implements Listener {
           Views.openJoinMenu(player, this.factions);
           break;
         case "claim":
+          Views.openClaimChoiceMenu(player, faction, factions);
           break;
         case "delete":
           faction.delete(factions);
@@ -127,14 +130,105 @@ public class ClickHandler implements Listener {
 
   private void handleInvite(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
-    if (event.getSlot() == 45) {
-      if (Bukkit.getOnlinePlayers().size() > 45) {
-        Views.openInviteMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false), 45);
-        return;
-      } 
-      Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
+    Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+    if (faction == null || !faction.isPlayerLeader(player)) {
+      player.closeInventory();
       return;
     }
+
+    if (event.getSlot() == 45) {
+      if (Bukkit.getOnlinePlayers().size() > 45) {
+        Views.openInviteMenu(player, faction, 45);
+        return;
+      } 
+      Views.openNavigationMenu(player, faction);
+      return;
+    }
+
+    String head_name = event.getCursor().getItemMeta().getDisplayName();
+    Player target = Bukkit.getPlayerExact(head_name);
+    if (target == null) {
+      return;
+    }
+
+    faction.invitePlayer(target, player);
+  }
+
+  private void handleClaims(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+    Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+    if (faction == null || !faction.isPlayerLeader(player)) {
+      player.closeInventory();
+      return;
+    }
+
+    if (event.getSlot() == 45) {
+      Views.openNavigationMenu(player, faction);
+    }
+
+    if (event.getSlot() == 49) {
+      player.closeInventory();
+      player.sendMessage(Utils.formatText("&aYou can create new claims using the command: /nufactions claim new NAME RADIUS"));
+      return;
+    }
+
+    // TODO: Get page number and get proper claim
+    int slot = event.getSlot();
+    if (slot > faction.faction_claims.size()) {
+      return;
+    }
+    Claim claim = faction.faction_claims.get(slot);
+    if (claim == null) {
+      return;
+    }
+    Views.openSpecificClaimMenu(player, faction, claim, this.factions);
+  }
+
+  private void handleClaim(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+    Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+    if (event.getSlot() == 18) {
+      Views.openClaimChoiceMenu(player, faction, this.factions);
+      return;
+    }
+
+    if (faction == null || !faction.isPlayerLeader(player)) {
+      return;
+    }
+
+    String inv_title = event.getView().getTitle();
+    // example title: Nu-Factions:_Claim_NAME
+    String claim_name = inv_title.split(" ")[2];
+    Claim claim = Claim.getClaimFromName(faction, claim_name);
+    if (claim == null) {
+      return;
+    }
+
+    int slot = event.getSlot();
+    switch (slot) {
+      case 10:
+        claim.radius -= 25;
+        break;
+      case 11:
+        claim.radius -= 10;
+        break;
+      case 12:
+        claim.radius -= 5;
+        break;
+      case 13:
+        // TODO: Set radius
+        break;
+      case 14:
+        claim.radius += 5;
+        break;
+      case 15:
+        claim.radius += 10;
+        break;
+      case 16:
+        claim.radius += 25;
+        break;
+    }
+    Views.openSpecificClaimMenu(player, faction, claim, this.factions);
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -170,6 +264,14 @@ public class ClickHandler implements Listener {
     }
     if (inv_title.contains("Invite")) {
       handleInvite(event);
+      return;
+    }
+    if (inv_title.contains("Claims")) {
+      handleClaims(event);
+      return;
+    }
+    if (inv_title.contains("Claim")) {
+      handleClaim(event);
       return;
     }
   }

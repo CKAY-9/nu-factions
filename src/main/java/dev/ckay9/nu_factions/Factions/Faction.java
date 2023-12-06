@@ -63,6 +63,7 @@ public class Faction {
     }
 
     this.invites.add(target); 
+    self.sendMessage(Utils.formatText("&aYou have invited " + target.getName() + " to your faction!"));
     target.sendMessage(Utils.formatText("&aYou have been invited to join " + this.faction_name + "! Do /nufactions join " + this.faction_name));
   }
 

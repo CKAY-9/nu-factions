@@ -15,11 +15,13 @@ public class Claim {
   public Vector3 ending_position;
   public String claim_name;
   public ArrayList<Player> players_inside = new ArrayList<Player>();
+  public int radius;
 
   public Claim(Vector3 start, Vector3 end, String name) {
     this.starting_positon = start;
     this.ending_position = end;
     this.claim_name = name;
+    this.radius = this.calculateRadius();
   } 
 
   public boolean isPlayerInside(Player player) {
@@ -36,12 +38,26 @@ public class Claim {
     return calculateSideLength() * calculateSideLength();
   }
 
+  public int calculateRadius() {
+    return (int)Math.round(calculateSideLength() / 2);
+  }
+
   public int calculateSideLength() {
     return Math.abs(this.starting_positon.x - this.ending_position.x);
   }
 
   public static int getCost(int side_length) {
     return (int)Math.floor(side_length / 10);
+  }
+
+  public static Claim getClaimFromName(Faction faction, String name) {
+    for (int i = 0; i < faction.faction_claims.size(); i++) {
+      Claim claim = faction.faction_claims.get(i);
+      if (claim.claim_name.equals(name)) {
+        return claim;
+      }
+    } 
+    return null;
   }
 
   // I love loops

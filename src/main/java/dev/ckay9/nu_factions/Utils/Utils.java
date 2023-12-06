@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -38,6 +39,14 @@ public class Utils {
     next_meta.setDisplayName(formatText("&a&lNEXT"));
     next_button.setItemMeta(next_meta);
     return next_button;
+  }
+
+  public static ArrayList<Player> getOnlinePlayers() {
+    ArrayList<Player> players = new ArrayList<Player>();
+    for (Player ply : Bukkit.getOnlinePlayers()) {
+      players.add(ply);
+    }
+    return players;
   }
 
   public static LinkedHashMap<String, Long> getLeaderboard(NuFactions factions) {

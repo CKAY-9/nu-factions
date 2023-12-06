@@ -5,5 +5,5 @@ api-version: 1.19
 authors: [ CKAY9 ]
 description: Play The Walls in any Minecraft world
 commands:
-  nufaction:
+  nufactions:
     description: Interact with the Nu-Factions plugin

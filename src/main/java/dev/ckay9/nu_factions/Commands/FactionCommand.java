@@ -271,6 +271,11 @@ public class FactionCommand implements CommandExecutor {
       return false;
     }
 
+    if (args.length == 0) {
+      Faction f = Faction.getFactionFromMemberUUID(this.factions, (Player)sender, false);
+      Views.openNavigationMenu((Player)sender, f);
+    }
+
     try {
       String subcommand = args[0].toLowerCase();
       Player player = (Player) sender;
@@ -327,10 +332,6 @@ public class FactionCommand implements CommandExecutor {
 
       return false;
     } catch (Exception ex) {
-      if (sender instanceof Player) {
-        Faction f = Faction.getFactionFromMemberUUID(this.factions, (Player)sender, false);
-        Views.openNavigationMenu((Player)sender, f);
-      }
       Utils.getPlugin().getLogger().warning(ex.toString());
     }
 
