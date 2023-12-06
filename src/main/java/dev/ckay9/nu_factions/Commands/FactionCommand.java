@@ -192,21 +192,7 @@ public class FactionCommand implements CommandExecutor {
   }
 
   private void executeInvite(Faction faction, Player player, String[] args) {
-    if (!faction.isPlayerLeader(player)) {
-      player.sendMessage(Utils.formatText("&cYou must be a faction leader to execute this command!"));
-      return;
-    }
-
-    String target_player_name = args[1];
-    Player target_player = Bukkit.getPlayer(target_player_name);
-    if (target_player == null) {
-      player.sendMessage(Utils.formatText("&cFailed to find player with specified name!"));
-      return;
-    }
-
-    faction.invites.add(target_player); 
-    target_player.sendMessage(Utils.formatText("&aYou have been invited to join " + faction.faction_name + "! Do /nufactions join " + faction.faction_name));
-    return;
+    faction.invitePlayer(Bukkit.getPlayer(args[1]), player);    
   }
 
   private void executeJoin(Faction faction, Player player, String[] args) {
@@ -341,7 +327,10 @@ public class FactionCommand implements CommandExecutor {
 
       return false;
     } catch (Exception ex) {
-      sender.sendMessage(Utils.formatText("&c" + ex.toString()));
+      if (sender instanceof Player) {
+        Faction f = Faction.getFactionFromMemberUUID(this.factions, (Player)sender, false);
+        Views.openNavigationMenu((Player)sender, f);
+      }
       Utils.getPlugin().getLogger().warning(ex.toString());
     }
 

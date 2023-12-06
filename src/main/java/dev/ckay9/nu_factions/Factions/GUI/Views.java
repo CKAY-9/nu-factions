@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import dev.ckay9.nu_factions.NuFactions;
 import dev.ckay9.nu_factions.Factions.Claim;
@@ -21,6 +22,9 @@ public class Views {
     player.closeInventory();
     Inventory board_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Leaderboard"));
     board_inventory.clear();
+
+    board_inventory.setItem(18, Utils.generateBackButton());
+
     int runnnig_total = 10;
     LinkedHashMap<String, Long> entries = Utils.getLeaderboard(factions);
     int i = 0;
@@ -46,6 +50,9 @@ public class Views {
     player.closeInventory();
     Inventory join_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Join Faction"));
     join_inventory.clear();
+
+    join_inventory.setItem(45, Utils.generateBackButton());
+
     ArrayList<Faction> invitations = Faction.getAllFactionInvites(factions, player);
     for (int i = 0; i < invitations.size(); i++) {
       if (i >= 54) {
@@ -60,6 +67,20 @@ public class Views {
     }
     player.openInventory(join_inventory);
   }
+
+  public static void openClaimChoiceMenu(Player player, Faction faction, NuFactions factions) {
+    player.closeInventory();
+    if (faction == null) {
+      return;
+    }
+    if (!faction.isPlayerLeader(player)) { 
+      return;
+    }
+    Inventory claim_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Claims"));
+    claim_inventory.clear();
+
+    player.openInventory(claim_inventory);
+  }
   
   public static void openInformationMenu(Player player, Faction faction, NuFactions factions) {
     player.closeInventory();
@@ -67,8 +88,10 @@ public class Views {
       return;
     }
 
-    Inventory info_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Faction Information"));
+    Inventory info_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Information"));
     info_inventory.clear();
+
+    info_inventory.setItem(18, Utils.generateBackButton());
 
     ItemStack name_block = new ItemStack(Material.SKELETON_SKULL, 1);
     ItemMeta name_meta = name_block.getItemMeta();
@@ -100,11 +123,53 @@ public class Views {
     player.openInventory(info_inventory);
   }
 
+  public static void openInviteMenu(Player player, Faction faction, int starting_from_player_index) {
+    player.closeInventory();
+    if (faction == null || !faction.isPlayerLeader(player)) {
+      return;
+    }
+    Inventory invite_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Invite Player"));
+    invite_inventory.clear();
+
+    invite_inventory.setItem(45, Utils.generateBackButton());
+    if (Bukkit.getOnlinePlayers().size() > 45) {
+      invite_inventory.setItem(53, Utils.generateNextButton());
+    }
+  
+    int inv_index = 0;
+    int iter_index = 0;
+    for (Player ply : Bukkit.getOnlinePlayers()) {
+      // this skips unwanted players
+      if (iter_index < starting_from_player_index) {
+        iter_index++;
+        continue;
+      }
+      if (inv_index >= 45) {
+        break;
+      }
+
+      ItemStack player_head = new ItemStack(Material.SKELETON_SKULL, 1);
+      SkullMeta head_meta = (SkullMeta)player_head.getItemMeta();
+      head_meta.setDisplayName(ply.getName());
+      head_meta.setOwningPlayer(Bukkit.getOfflinePlayer(ply.getName()));
+      player_head.setItemMeta(head_meta);
+      invite_inventory.setItem(inv_index, player_head);
+
+      inv_index++;
+      iter_index++;
+    } 
+
+    player.openInventory(invite_inventory);
+  }
+
   public static void openNavigationMenu(Player player, Faction faction) {
     player.closeInventory();
     Inventory nav_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Navigation"));
     nav_inventory.clear();
     int running_total = 10;
+
+    ItemStack close = Utils.generateBackButton();
+    nav_inventory.setItem(18, close);
 
     ItemStack board_button = new ItemStack(Material.BLACK_CONCRETE, 1);
     ItemMeta board_meta = board_button.getItemMeta();

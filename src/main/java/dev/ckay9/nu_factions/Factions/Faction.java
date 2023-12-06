@@ -56,6 +56,16 @@ public class Faction {
     return (player.getUniqueId().toString().equalsIgnoreCase(this.faction_leader.toString()));
   }
 
+  public void invitePlayer(Player target, Player self) {
+    if (!this.isPlayerLeader(self)) {
+      self.sendMessage(Utils.formatText("&cYou must be a faction leader to execute this command!"));
+      return;
+    }
+
+    this.invites.add(target); 
+    target.sendMessage(Utils.formatText("&aYou have been invited to join " + this.faction_name + "! Do /nufactions join " + this.faction_name));
+  }
+
   public void saveFactionData() {
     String id = this.faction_leader.toString();
     Data.factions_data.set(id + ".name", this.faction_name);

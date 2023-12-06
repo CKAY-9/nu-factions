@@ -10,6 +10,7 @@ import dev.ckay9.nu_factions.Factions.Faction;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,6 +24,11 @@ public class ClickHandler implements Listener {
 
   private void handleNavigation(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
+    if (event.getSlot() == 18) {
+      player.closeInventory();
+      return;
+    }
+
     HashMap<Integer, String> nav_items = new HashMap<Integer, String>();
     int running_total = 10;
     nav_items.put(running_total++, "board");
@@ -52,6 +58,9 @@ public class ClickHandler implements Listener {
         continue;
       }
       switch (nav_items.get(key).toLowerCase()) {
+        case "board":
+          Views.openBoardMenu(player, this.factions);
+          break;
         case "create":
           break;
         case "join":
@@ -60,11 +69,13 @@ public class ClickHandler implements Listener {
         case "claim":
           break;
         case "delete":
+          faction.delete(factions);
+          player.closeInventory(); 
           break;
         case "invite":
+          Views.openInviteMenu(player, faction, 0);
           break;
         case "leave":
-          Views.openBoardMenu(player, this.factions);
           break;
         case "info":
           Views.openInformationMenu(player, faction, factions);
@@ -75,6 +86,12 @@ public class ClickHandler implements Listener {
 
   private void handleJoin(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
+
+    if (event.getSlot() == 45) {
+      Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
+      return;
+    }
+
     ArrayList<Faction> invitations = Faction.getAllFactionInvites(this.factions, player);
     for (int i = 0; i < invitations.size(); i++) {
       if (i >= 54) {
@@ -89,6 +106,36 @@ public class ClickHandler implements Listener {
       break;
     } 
   }
+  
+  private void handleLeaderboard(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+
+    if (event.getSlot() == 18) {
+      Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
+      return;
+    }
+  }
+
+  private void handleInfo(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+
+    if (event.getSlot() == 18) {
+      Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
+      return;
+    }
+  }
+
+  private void handleInvite(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+    if (event.getSlot() == 45) {
+      if (Bukkit.getOnlinePlayers().size() > 45) {
+        Views.openInviteMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false), 45);
+        return;
+      } 
+      Views.openNavigationMenu(player, Faction.getFactionFromMemberUUID(this.factions, player, false));
+      return;
+    }
+  }
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void onGUIClick(InventoryClickEvent event) {
@@ -102,6 +149,8 @@ public class ClickHandler implements Listener {
       return;
     }
 
+    event.setCancelled(true);
+
     String inv_title = event.getView().getTitle();
     if (inv_title.contains("Navigation")) {
       handleNavigation(event);
@@ -109,6 +158,18 @@ public class ClickHandler implements Listener {
     }
     if (inv_title.contains("Join")) {
       handleJoin(event);
+      return;
+    }
+    if (inv_title.contains("Leaderboard")) {
+      handleLeaderboard(event);
+      return;
+    }
+    if (inv_title.contains("Information")) {
+      handleInfo(event);
+      return;
+    }
+    if (inv_title.contains("Invite")) {
+      handleInvite(event);
       return;
     }
   }
