@@ -76,7 +76,7 @@ public class ClickHandler implements Listener {
           player.closeInventory(); 
           break;
         case "invite":
-          Views.openInviteMenu(player, faction, 0);
+          Views.openInviteMenu(player, faction);
           break;
         case "leave":
           break;
@@ -138,7 +138,7 @@ public class ClickHandler implements Listener {
 
     if (event.getSlot() == 45) {
       if (Bukkit.getOnlinePlayers().size() > 45) {
-        Views.openInviteMenu(player, faction, 45);
+        Views.openInviteMenu(player, faction);
         return;
       } 
       Views.openNavigationMenu(player, faction);
@@ -216,7 +216,8 @@ public class ClickHandler implements Listener {
         claim.radius -= 5;
         break;
       case 13:
-        // TODO: Set radius
+        claim.changeRadius(player, faction, factions, claim.radius);
+        player.closeInventory();
         break;
       case 14:
         claim.radius += 5;
@@ -229,6 +230,35 @@ public class ClickHandler implements Listener {
         break;
     }
     Views.openSpecificClaimMenu(player, faction, claim, this.factions);
+  }
+
+  private void handleAdmin(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+    if (!player.isOp()) {
+      return;
+    }
+    Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+    
+    int slot = event.getSlot();
+    if (slot == 18) {
+      Views.openNavigationMenu(player, faction);
+      return;
+    }
+
+    switch (slot) {
+      case 10:
+        Views.openFactionSelectMenu(player, this.factions, AdminView.ADD_POWER); 
+        break;
+      case 11:
+        Views.openFactionSelectMenu(player, this.factions, AdminView.REMOVE_POWER);
+        break;
+      case 12:
+        Views.openFactionSelectMenu(player, this.factions, AdminView.SET_POWER);
+        break;
+      case 13:
+        Views.openFactionSelectMenu(player, this.factions, AdminView.DELETE_FACTION);
+        break;
+    }    
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -264,6 +294,10 @@ public class ClickHandler implements Listener {
     }
     if (inv_title.contains("Invite")) {
       handleInvite(event);
+      return;
+    }
+    if (inv_title.contains("Admin")) {
+      handleAdmin(event);
       return;
     }
     if (inv_title.contains("Claims")) {

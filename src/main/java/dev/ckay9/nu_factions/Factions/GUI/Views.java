@@ -200,7 +200,7 @@ public class Views {
     player.openInventory(info_inventory);
   }
 
-  public static void openInviteMenu(Player player, Faction faction, int starting_from_player_index) {
+  public static void openInviteMenu(Player player, Faction faction) {
     player.closeInventory();
     if (faction == null || !faction.isPlayerLeader(player)) {
       return;
@@ -214,11 +214,12 @@ public class Views {
     }
  
     ArrayList<Player> players = Utils.getOnlinePlayers();
-    if (starting_from_player_index > players.size()) {
+    int index_to_start = 0;
+    if (index_to_start > players.size()) {
       return;
     }
     int inv_index = 0;
-    for (int i = starting_from_player_index; i < players.size(); i++) {
+    for (int i = index_to_start; i < players.size(); i++) {
       Player ply = players.get(i); 
       ItemStack player_head = new ItemStack(Material.PLAYER_HEAD, 1);
       SkullMeta head_meta = (SkullMeta)player_head.getItemMeta();
@@ -226,11 +227,78 @@ public class Views {
       head_meta.setOwningPlayer(Bukkit.getOfflinePlayer(ply.getName()));
       player_head.setItemMeta(head_meta);
       invite_inventory.setItem(inv_index, player_head);
-
       inv_index++;
     } 
 
     player.openInventory(invite_inventory);
+  }
+
+  public static void openAdminMenu(Player player) {
+    player.closeInventory();
+    if (!player.isOp()) {
+      return;
+    }
+
+    Inventory admin_inventory = Bukkit.createInventory(null, 27, Utils.formatText("&c&lNu-Factions: Admin"));
+    admin_inventory.clear();
+    admin_inventory.setItem(18, Utils.generateBackButton());
+
+    ItemStack add_power = new ItemStack(Material.GREEN_CONCRETE, 1);
+    ItemMeta add_meta = add_power.getItemMeta();
+    add_meta.setDisplayName(Utils.formatText("&a&lADD POWER"));
+    add_power.setItemMeta(add_meta);
+    admin_inventory.setItem(10, add_power);
+
+    ItemStack remove_power = new ItemStack(Material.RED_CONCRETE, 1);
+    ItemMeta remove_meta = remove_power.getItemMeta();
+    remove_meta.setDisplayName(Utils.formatText("&c&lREMOVE POWER"));
+    remove_power.setItemMeta(remove_meta);
+    admin_inventory.setItem(11, remove_power);
+
+    ItemStack set_power = new ItemStack(Material.WHITE_CONCRETE, 1);
+    ItemMeta set_meta = set_power.getItemMeta();
+    set_meta.setDisplayName(Utils.formatText("&lSET POWER"));
+    set_power.setItemMeta(set_meta);
+    admin_inventory.setItem(12, set_power);
+
+    ItemStack delete_faction = new ItemStack(Material.BARRIER, 1);
+    ItemMeta delete_meta = delete_faction.getItemMeta();
+    delete_meta.setDisplayName(Utils.formatText("&c&lDELETE FACTION"));
+    delete_faction.setItemMeta(delete_meta);
+    admin_inventory.setItem(13, delete_faction);
+
+    player.openInventory(admin_inventory);
+  }
+
+  public static void openFactionSelectMenu(Player player, NuFactions factions, AdminView view) {
+    player.closeInventory();
+    if (!player.isOp()) {
+      return;
+    }
+
+    Inventory factions_inventory = Bukkit.createInventory(null, 54, Utils.formatText("&c&lNu-Factions: Choose a Faction"));
+    factions_inventory.clear();
+    factions_inventory.setItem(45, Utils.generateBackButton());
+  
+    // TODO: get page number and proper factions
+    int inv_index = 0;
+    for (int i = 0; i < factions.factions.size(); i++) {
+      if (inv_index >= 45) {
+        break;
+      }
+
+      Faction faction = factions.factions.get(i);
+
+      ItemStack faction_stack = new ItemStack(Material.NETHERITE_SWORD, 1);
+      ItemMeta faction_meta = faction_stack.getItemMeta();
+      faction_meta.setDisplayName(Utils.formatText("&a&l" + faction.faction_name));
+      faction_stack.setItemMeta(faction_meta);
+      factions_inventory.setItem(inv_index, faction_stack);
+
+      inv_index++;
+    }
+
+    player.openInventory(factions_inventory);
   }
 
   public static void openNavigationMenu(Player player, Faction faction) {

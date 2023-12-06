@@ -76,6 +76,9 @@ public class Data {
       if (!config_data.isSet("config.interval_power_time_in_minutes")) {
         config_data.set("config.interval_power_time_in_minutes", 30);
       }
+      if (!config_data.isSet("config.claim_cost_multiplier")) {
+        config_data.set("config.claim_cost_multiplier", 0.2);
+      }
       
       config_data.save(config_file);
     } catch (IOException ex) {

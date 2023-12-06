@@ -50,7 +50,7 @@ public class FactionCommand implements CommandExecutor {
     Faction new_faction = new Faction(new ArrayList<Claim>(), uuids, faction_name, player.getUniqueId(), 100);
     new_faction.saveFactionData();
     this.factions.factions.add(new_faction);
-    player.sendMessage(Utils.formatText("&aSuccesfully created faction " + faction_name));
+    player.sendMessage(Utils.formatText("&aSuccessfully created faction " + faction_name));
   }
 
   private void executeInformation(Player player, Faction faction) {
@@ -82,7 +82,7 @@ public class FactionCommand implements CommandExecutor {
       }
 
       int claim_radius = Integer.parseInt(args[3]);
-      int required_power = (int)Math.floor(claim_radius / (1 - Data.config_data.getDouble("config.claim_addition_cost_percentage", 0.1)));
+      int required_power = (int)Math.round(Claim.getCost(claim_radius * 2) * (1 + Data.config_data.getDouble("config.claim_addition_cost_percentage", 0.1)));
 
       if (required_power > faction.faction_power) {
         player.sendMessage(Utils.formatText("&cYour faction doesn't have enough power to create this claim!"));
@@ -107,7 +107,7 @@ public class FactionCommand implements CommandExecutor {
       faction.faction_claims.add(new_claim);
       faction.saveFactionData();
 
-      player.sendMessage(Utils.formatText("&aSuccesfully created claim " + claim_name + "!"));
+      player.sendMessage(Utils.formatText("&aSuccessfully created claim " + claim_name + "!"));
     }
 
     if (type.contains("delete")) {
@@ -127,7 +127,7 @@ public class FactionCommand implements CommandExecutor {
         Data.factions_data.set(faction.faction_leader.toString() + ".claims." + claim_name, null);
         Data.factions_data.save(Data.factions_file);
         faction.saveFactionData();
-        player.sendMessage(Utils.formatText("&aSuccesfully deleted claim " + claim_name));
+        player.sendMessage(Utils.formatText("&aSuccessfully deleted claim " + claim_name));
       } catch (IOException ex) {
         player.sendMessage(Utils.formatText("&c" + ex.toString()));
         Utils.getPlugin().getLogger().warning(ex.toString());
@@ -148,36 +148,7 @@ public class FactionCommand implements CommandExecutor {
       }
 
       int new_radius = Integer.parseInt(args[3]);
-      int cost = Claim.getCost(new_radius * 2);
-      if (cost > faction.faction_power) {
-        player.sendMessage(Utils.formatText("&cYour faction doesn't have enough power to do this change!"));
-        return;
-      }
-      
-      int prev_radius = (int)Math.round(claim.calculateSideLength() / 2);
-      Location starting = new Location(
-        player.getWorld(), 
-        claim.starting_positon.x - prev_radius, 
-        0, 
-        claim.starting_positon.z - prev_radius
-      ).add(new_radius, 320, new_radius);
-      Location ending = new Location(
-        player.getWorld(), 
-        claim.starting_positon.x - prev_radius, 
-        0, 
-        claim.starting_positon.z - prev_radius
-      ).add(-new_radius, -64, -new_radius);
-
-      boolean does_collide = Claim.doesClaimCollideWithOthers(starting, ending, this.factions, claim);
-      if (does_collide) {
-        player.sendMessage(Utils.formatText("&cThis change will run into other claims!"));
-        return;
-      }
-
-      claim.starting_positon = new Vector3(starting.getBlockX(), 320, starting.getBlockZ());
-      claim.ending_position = new Vector3(ending.getBlockX(), -64, ending.getBlockZ());
-      faction.saveFactionData();
-      player.sendMessage(Utils.formatText("&aSuccesfully updated claim!"));
+      claim.changeRadius(player, faction, factions, new_radius);
     }
   }
 
@@ -188,7 +159,7 @@ public class FactionCommand implements CommandExecutor {
     }
 
     faction.delete(this.factions);
-    player.sendMessage(Utils.formatText("&aSuccesfully deleted your faction!"));
+    player.sendMessage(Utils.formatText("&aSuccessfully deleted your faction!"));
   }
 
   private void executeInvite(Faction faction, Player player, String[] args) {

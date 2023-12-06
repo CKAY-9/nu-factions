@@ -7,7 +7,9 @@ import javax.annotation.Nullable;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import dev.ckay9.nu_factions.Data;
 import dev.ckay9.nu_factions.NuFactions;
+import dev.ckay9.nu_factions.Utils.Utils;
 import dev.ckay9.nu_factions.Utils.Vector3;
 
 public class Claim {
@@ -46,8 +48,41 @@ public class Claim {
     return Math.abs(this.starting_positon.x - this.ending_position.x);
   }
 
+  public void changeRadius(Player player, Faction faction, NuFactions factions, int new_radius) {
+    int cost = Claim.getCost(new_radius * 2);
+    if (cost > faction.faction_power) {
+      player.sendMessage(Utils.formatText("&cYour faction doesn't have enough power to do this change!"));
+      return;
+    }
+
+    int prev_radius = (int)Math.round(this.calculateSideLength() / 2);
+    Location starting = new Location(
+      player.getWorld(), 
+      this.starting_positon.x - prev_radius, 
+      0, 
+      this.starting_positon.z - prev_radius
+    ).add(new_radius, 320, new_radius);
+    Location ending = new Location(
+      player.getWorld(), 
+      this.starting_positon.x - prev_radius, 
+      0, 
+      this.starting_positon.z - prev_radius
+    ).add(-new_radius, -64, -new_radius);
+
+    boolean does_collide = Claim.doesClaimCollideWithOthers(starting, ending, factions, this);
+    if (does_collide) {
+      player.sendMessage(Utils.formatText("&cThis change will run into other claims!"));
+      return;
+    }
+
+    this.starting_positon = new Vector3(starting.getBlockX(), 320, starting.getBlockZ());
+    this.ending_position = new Vector3(ending.getBlockX(), -64, ending.getBlockZ());
+    faction.saveFactionData();
+    player.sendMessage(Utils.formatText("&aSuccessfully updated claim!"));
+  }
+
   public static int getCost(int side_length) {
-    return (int)Math.floor(side_length / 10);
+    return (int)Math.floor(side_length * Data.config_data.getDouble("config.claim_cost_multiplier", 0.2));
   }
 
   public static Claim getClaimFromName(Faction faction, String name) {
