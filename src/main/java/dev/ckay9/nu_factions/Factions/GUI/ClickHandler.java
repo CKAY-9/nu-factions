@@ -4,6 +4,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
+import dev.ckay9.nu_factions.Data;
 import dev.ckay9.nu_factions.NuFactions;
 import dev.ckay9.nu_factions.Factions.Claim;
 import dev.ckay9.nu_factions.Factions.Faction;
@@ -273,6 +274,13 @@ public class ClickHandler implements Listener {
       return;
     }
 
+    if (event.getSlot() == 18) {
+      faction.faction_power = Data.config_data.getLong(faction.faction_leader.toString() + ".power");
+      player.closeInventory();
+      return;
+    }
+
+
     int slot = event.getSlot();
     switch (slot) {
       case 10:
@@ -285,6 +293,7 @@ public class ClickHandler implements Listener {
         faction.faction_power -= 10;
         break;
       case 13:
+        faction.saveFactionData();
         player.closeInventory();
         player.sendMessage(Utils.formatText("&aSuccessfully updated faction power!"));
         break;
@@ -299,7 +308,6 @@ public class ClickHandler implements Listener {
         break;
     }
     Views.openChangePowerMenu(player, faction);
-
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
