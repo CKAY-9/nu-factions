@@ -5,7 +5,8 @@
 Nu-Factions is a factions plugin for Spigot/Paper Minecraft servers.
 
 Supported Version: >1.19
-Plugin Version: v0.1.0
+<br />
+Plugin Version: v0.1.2
 
 ## Features
 
