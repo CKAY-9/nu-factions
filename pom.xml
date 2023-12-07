@@ -6,7 +6,7 @@
 
     <groupId>dev.ckay9.nu-factions</groupId>
     <artifactId>nu-factions</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
 
     <name>nu-factions</name>

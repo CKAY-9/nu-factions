@@ -279,7 +279,7 @@ public class ClickHandler implements Listener {
     int slot = event.getSlot();
     if (slot == ClickTypes.BACK_CLOSE_LARGE_MENU) {
       Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
-      Views.openNavigationMenu(player, faction);
+      Views.openAdminMenu(player); 
       return;
     }
 
