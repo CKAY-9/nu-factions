@@ -66,9 +66,14 @@ public class ClickHandler implements Listener {
           Views.openBoardMenu(player, this.factions);
           break;
         case "create":
+          player.closeInventory();
+          player.sendMessage(Utils.formatText("&aYou can create a new clan using the command: /nufactions create NAME"));
           break;
         case "join":
           Views.openJoinMenu(player, this.factions);
+          break;
+        case "admin":
+          Views.openAdminMenu(player);
           break;
         case "claim":
           Views.openClaimChoiceMenu(player, faction, factions);
@@ -81,6 +86,8 @@ public class ClickHandler implements Listener {
           Views.openInviteMenu(player, faction);
           break;
         case "leave":
+          player.closeInventory();
+          faction.leave(player);
           break;
         case "info":
           Views.openInformationMenu(player, faction, factions);
@@ -138,7 +145,8 @@ public class ClickHandler implements Listener {
       return;
     }
 
-    if (event.getSlot() == ClickTypes.BACK_CLOSE_LARGE_MENU) {
+    int slot = event.getSlot();
+    if (slot == ClickTypes.BACK_CLOSE_LARGE_MENU) {
       if (Bukkit.getOnlinePlayers().size() > ClickTypes.BACK_CLOSE_LARGE_MENU) {
         Views.openInviteMenu(player, faction);
         return;
@@ -147,8 +155,9 @@ public class ClickHandler implements Listener {
       return;
     }
 
-    String head_name = event.getCursor().getItemMeta().getDisplayName();
-    Player target = Bukkit.getPlayerExact(head_name);
+    ArrayList<Player> players = Utils.getOnlinePlayers();
+    // TODO: get proper player and page
+    Player target = players.get(slot);
     if (target == null) {
       return;
     }
@@ -261,6 +270,27 @@ public class ClickHandler implements Listener {
     }    
   }
 
+  private void handleFactionPick(InventoryClickEvent event) {
+    Player player = (Player)event.getWhoClicked();
+    if (!player.isOp()) {
+      return;
+    }
+
+    int slot = event.getSlot();
+    if (slot == ClickTypes.BACK_CLOSE_LARGE_MENU) {
+      Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+      Views.openNavigationMenu(player, faction);
+      return;
+    }
+
+    // TODO: get proper faction and page
+    Faction faction = this.factions.factions.get(slot);
+    if (faction == null) {
+      return;
+    }
+    Views.openChangePowerMenu(player, faction);
+  }
+
   private void handlePower(InventoryClickEvent event) {
     Player player = (Player)event.getWhoClicked();
     if (!player.isOp()) {
@@ -274,14 +304,13 @@ public class ClickHandler implements Listener {
       return;
     }
 
-    if (event.getSlot() == 18) {
+    int slot = event.getSlot();
+    if (slot == ClickTypes.BACK_CLOSE_SMALL_MENU) {
       faction.faction_power = Data.config_data.getLong(faction.faction_leader.toString() + ".power");
-      player.closeInventory();
+      Views.openFactionSelectMenu(player, this.factions, AdminView.CHANGE_POWER);
       return;
     }
 
-
-    int slot = event.getSlot();
     switch (slot) {
       case 10:
         faction.faction_power -= 50;
@@ -324,6 +353,7 @@ public class ClickHandler implements Listener {
 
     event.setCancelled(true);
 
+    // TODO: not this
     String inv_title = event.getView().getTitle();
     if (inv_title.contains("Navigation")) {
       handleNavigation(event);
@@ -347,6 +377,10 @@ public class ClickHandler implements Listener {
     }
     if (inv_title.contains("Admin")) {
       handleAdmin(event);
+      return;
+    }
+    if (inv_title.contains(" Faction")) {
+      handleFactionPick(event);
       return;
     }
     if (inv_title.contains("Change")) {

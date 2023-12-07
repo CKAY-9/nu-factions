@@ -56,6 +56,17 @@ public class Faction {
     return (player.getUniqueId().toString().equalsIgnoreCase(this.faction_leader.toString()));
   }
 
+  public void leave(Player player) {
+    if (!this.faction_members.contains(player.getUniqueId())) {
+      return;
+    }
+
+    this.active_members.remove(player);
+    this.faction_members.remove(player.getUniqueId());
+    this.saveFactionData();
+    player.sendMessage(Utils.formatText("&aYou have left your faction!"));
+  }
+
   public void invitePlayer(Player target, Player self) {
     if (!this.isPlayerLeader(self)) {
       self.sendMessage(Utils.formatText("&cYou must be a faction leader to execute this command!"));
