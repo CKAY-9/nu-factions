@@ -306,7 +306,7 @@ public class ClickHandler implements Listener {
 
     int slot = event.getSlot();
     if (slot == ClickTypes.BACK_CLOSE_SMALL_MENU) {
-      faction.faction_power = Data.config_data.getLong(faction.faction_leader.toString() + ".power");
+      faction.faction_power = Data.factions_data.getLong(faction.faction_leader.toString() + ".power", 100);
       Views.openFactionSelectMenu(player, this.factions, AdminView.CHANGE_POWER);
       return;
     }

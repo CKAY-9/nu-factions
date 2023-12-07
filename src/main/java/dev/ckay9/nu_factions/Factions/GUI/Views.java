@@ -22,47 +22,47 @@ public class Views {
     // Decrease
     ItemStack decrease_five = new ItemStack(Material.RED_CONCRETE, 1);
     ItemMeta df_meta = decrease_five.getItemMeta();
-    df_meta.setDisplayName(Utils.formatText("&c&l-" + highest));
+    df_meta.setDisplayName(Utils.formatText("&c&l-" + lowest));
     decrease_five.setItemMeta(df_meta);
-    inv.setItem(ClickTypes.SLIDER_NEGATIVE_LOWEST, decrease_five);
+    inv.setItem(12, decrease_five);
 
     ItemStack decrease_ten = new ItemStack(Material.RED_WOOL, 1);
     ItemMeta dt_meta = decrease_ten.getItemMeta();
     dt_meta.setDisplayName(Utils.formatText("&c&l-" + middle));
     decrease_ten.setItemMeta(dt_meta);
-    inv.setItem(ClickTypes.SLIDER_NEGATIVE_MIDDLE, decrease_ten);
+    inv.setItem(11, decrease_ten);
 
     ItemStack decrease_twenty_five = new ItemStack(Material.RED_STAINED_GLASS, 1);
     ItemMeta dtf_meta = decrease_twenty_five.getItemMeta();
-    dtf_meta.setDisplayName(Utils.formatText("&c&l-" + lowest));
+    dtf_meta.setDisplayName(Utils.formatText("&c&l-" + highest));
     decrease_twenty_five.setItemMeta(dtf_meta);
-    inv.setItem(ClickTypes.SLIDER_NEGATIVE_HIGHEST, decrease_twenty_five);
+    inv.setItem(10, decrease_twenty_five);
 
     // Information
     ItemStack info = new ItemStack(Material.WHITE_CONCRETE, 1);
     ItemMeta info_meta = info.getItemMeta();
     info_meta.setDisplayName(Utils.formatText("&lCONFIRM CHANGE: " + change));
     info.setItemMeta(info_meta);
-    inv.setItem(ClickTypes.SLIDER_CONFIRM, info);
+    inv.setItem(13, info);
 
     // Increase 
     ItemStack increase_five = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
     ItemMeta if_meta = increase_five.getItemMeta();
     if_meta.setDisplayName(Utils.formatText("&a&l+" + lowest));
     increase_five.setItemMeta(if_meta);
-    inv.setItem(ClickTypes.SLIDER_POSITIVE_LOWEST, increase_five);
+    inv.setItem(14, increase_five);
 
     ItemStack increase_ten = new ItemStack(Material.GREEN_WOOL, 1);
     ItemMeta it_meta = increase_ten.getItemMeta();
     it_meta.setDisplayName(Utils.formatText("&a&l+" + middle));
     increase_ten.setItemMeta(it_meta);
-    inv.setItem(ClickTypes.SLIDER_NEGATIVE_MIDDLE, increase_ten);
+    inv.setItem(15, increase_ten);
 
     ItemStack increase_twenty_five = new ItemStack(Material.GREEN_CONCRETE, 1);
     ItemMeta itf_meta = increase_twenty_five.getItemMeta();
     itf_meta.setDisplayName(Utils.formatText("&a&l+" + highest));
     increase_twenty_five.setItemMeta(itf_meta);
-    inv.setItem(ClickTypes.SLIDER_POSITIVE_HIGHEST, increase_twenty_five);
+    inv.setItem(16, increase_twenty_five);
   }
 
   public static void openBoardMenu(Player player, NuFactions factions) {
