@@ -14,3 +14,4 @@ Plugin Version: v0.1.2
 - Name Tags: Display a player's faction in chat and above their head
 - Leaderboard: See which clans have the most land and power
 - Power System: Factions can gain power through doing tasks such as PvP, Grinding, and more
+- GUI: Allow players to interact with Nu-Factions using a GUI
