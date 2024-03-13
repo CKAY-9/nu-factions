@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import dev.ckay9.nu_factions.NuFactions;
@@ -20,10 +22,10 @@ public class BorderRevealer {
     private ArrayList<Player> players_using_revealer = new ArrayList<>();
 
     private void setBlock(int x, int z, Player player, Material material) {
-        int y = player.getWorld().getHighestBlockYAt(x, z);
-        Block block = player.getWorld().getBlockAt(x, y, z);
+        int highest_y = player.getWorld().getHighestBlockYAt(x, z);
+        Block block = player.getWorld().getBlockAt(x, highest_y, z);
         block.setType(material);
-        player.sendBlockChange(new Location(player.getWorld(), x, y, z), block.getBlockData());
+        player.sendBlockChange(new Location(player.getWorld(), x, highest_y, z), block.getBlockData());
     }
 
     private void cleanup(Player player) {
@@ -89,6 +91,13 @@ public class BorderRevealer {
                         for (int z2 = claim.ending_position.z; z2 < corner_b.z; z2++) {
                             setBlock(corner_b.x, z2, ply, Material.BEDROCK);
                         }
+
+                        WorldBorder border = Bukkit.createWorldBorder();
+                        border.setCenter(claim.getCenterCoordinates().x, claim.getCenterCoordinates().z);
+                        border.setSize(claim.radius);
+                        border.setDamageAmount(0);
+                        border.setWarningDistance(0);
+                        // TODO: Send via packets
                     }
                 }
             }
@@ -100,10 +109,10 @@ public class BorderRevealer {
             Player p = players_using_revealer.get(i);
             if (player.getUniqueId() == p.getUniqueId()) {
                 players_using_revealer.remove(p);
+                cleanup(player);
                 return;
             }
         }
         players_using_revealer.add(player);
-        cleanup(player);
     }
 }
