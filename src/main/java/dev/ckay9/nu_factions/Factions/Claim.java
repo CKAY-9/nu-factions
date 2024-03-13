@@ -97,24 +97,21 @@ public class Claim {
 
   // I love loops
   public static boolean doesClaimCollideWithOthers(Location starting, Location ending, NuFactions nu_factions, @Nullable Claim to_ignore) {
+    int new_claim_radius = Math.abs(starting.getBlockX() - ending.getBlockZ());
     for (int fi = 0; fi < nu_factions.factions.size(); fi++) {
       Faction f = nu_factions.factions.get(fi);
-      for (int c = 0; c < f.faction_claims.size(); c++) {
-        Claim claim = f.faction_claims.get(c);
-        if (to_ignore != null && claim == to_ignore) {
+      for (int fc = 0; fc < f.faction_claims.size(); fc++) {
+        Claim claim = f.faction_claims.get(fc);
+        if (claim == to_ignore) {
           continue;
         }
-
-        for (int x = claim.ending_position.x; x < claim.starting_positon.x; x++) {
-          for (int z = claim.ending_position.z; z < claim.starting_positon.z; z++) {
-            for (int xx = ending.getBlockX(); xx < starting.getBlockX(); xx++) {
-              for (int zz = ending.getBlockZ(); zz < starting.getBlockZ(); zz++) {
-                if (x == xx && z == zz) {
-                  return true;
-                } 
-              }
-            } 
-          }
+        int x_coord_diff = Math.abs(starting.getBlockX() - claim.starting_positon.x);
+        int z_coord_diff = Math.abs(starting.getBlockZ() - claim.starting_positon.z);
+        // check if other claim is inside this one
+        boolean x_boundary = x_coord_diff <= new_claim_radius; 
+        boolean z_boundary = z_coord_diff <= new_claim_radius;
+        if (x_boundary && z_boundary) {
+          return true;
         }
       }
     }
@@ -139,13 +136,15 @@ public class Claim {
       Faction f = nu_factions.factions.get(fi);
       for (int c = 0; c < f.faction_claims.size(); c++) {
         Claim claim = f.faction_claims.get(c);
-        for (int x = claim.ending_position.x; x < claim.starting_positon.x; x++) {
-          for (int z = claim.ending_position.z; z < claim.starting_positon.z; z++) {
-            if (player_location.getBlockX() == x && player_location.getBlockZ() == z) {
-              return new FactionClaim(f, claim);
-            }          
-          }
-        }
+        int claim_radius = Math.abs(claim.starting_positon.x - claim.ending_position.x);
+        int x_coord_diff = Math.abs(player_location.getBlockX() - claim.starting_positon.x);
+        int z_coord_diff = Math.abs(player_location.getBlockZ() - claim.starting_positon.z);
+        // check if player is inside claim
+        boolean x_boundary = x_coord_diff <= claim_radius; 
+        boolean z_boundary = z_coord_diff <= claim_radius;
+        if (x_boundary && z_boundary) {
+          return new FactionClaim(f, claim);
+        }     
       }
     }
     return null;
