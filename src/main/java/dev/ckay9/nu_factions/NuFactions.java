@@ -13,6 +13,7 @@ import dev.ckay9.nu_factions.Listeners.PlayerDeath;
 import dev.ckay9.nu_factions.Listeners.PlayerInteraction;
 import dev.ckay9.nu_factions.Listeners.PlayerJoin;
 import dev.ckay9.nu_factions.Listeners.PlayerLeave;
+import dev.ckay9.nu_factions.Tasks.BorderRevealer;
 import dev.ckay9.nu_factions.Tasks.ClaimDecay;
 import dev.ckay9.nu_factions.Tasks.ClaimDetection;
 import dev.ckay9.nu_factions.Tasks.FactionGUI;
@@ -21,6 +22,7 @@ import dev.ckay9.nu_factions.Tasks.PlayerName;
 
 public class NuFactions extends JavaPlugin {
   public ArrayList<Faction> factions = new ArrayList<Faction>();
+  public BorderRevealer boarder_revealer; // Needed because commands and GUI
   
   // Runs when plugin starts
   @Override
@@ -55,6 +57,9 @@ public class NuFactions extends JavaPlugin {
     }
     if (Data.config_data.getBoolean("config.interval_power_active", true)) {
       new IntervalPower(this);
+    }
+    if (Data.config_data.getBoolean("config.allow_border_checking", true)) {
+      this.boarder_revealer = new BorderRevealer(this);
     }
   }
 

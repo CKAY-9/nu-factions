@@ -61,6 +61,7 @@ public class ClickHandler implements Listener {
       if (key != event.getSlot()) {
         continue;
       }
+
       switch (nav_items.get(key).toLowerCase()) {
         case "board":
           Views.openBoardMenu(player, this.factions);
@@ -79,6 +80,7 @@ public class ClickHandler implements Listener {
           Views.openClaimChoiceMenu(player, faction, factions);
           break;
         case "delete":
+          if (faction == null) return;
           faction.delete(factions);
           player.closeInventory(); 
           break;
@@ -87,6 +89,7 @@ public class ClickHandler implements Listener {
           break;
         case "leave":
           player.closeInventory();
+          if (faction == null) return;
           faction.leave(player);
           break;
         case "info":
@@ -278,7 +281,7 @@ public class ClickHandler implements Listener {
 
     int slot = event.getSlot();
     if (slot == ClickTypes.BACK_CLOSE_LARGE_MENU) {
-      Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
+      //Faction faction = Faction.getFactionFromMemberUUID(this.factions, player, false);
       Views.openAdminMenu(player); 
       return;
     }

@@ -107,7 +107,7 @@ public class FactionCompleter implements TabCompleter {
         }
       }
 
-      if (faction != null & faction.isPlayerLeader(player)) {
+      if (faction != null && faction.isPlayerLeader(player)) {
         if (args[0].contains("claim") && (args[1].contains("delete") || args[1].contains("change")) && faction.isPlayerLeader(player)) {
           ArrayList<String> completors = new ArrayList<String>();
           for (int i = 0; i < faction.faction_claims.size(); i++) {

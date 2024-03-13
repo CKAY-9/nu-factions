@@ -49,6 +49,9 @@ public class Data {
       if (!config_data.isSet("config.show_right_gui")) {
         config_data.set("config.show_right_gui", true);
       }
+      if (!config_data.isSet("config.allow_border_checking")) {
+        config_data.set("config.allow_border_checking", true);
+      }
       if (!config_data.isSet("config.claim_addition_cost_percentage")) {
         config_data.set("config.claim_addition_cost_percentage", 0.1);
       }
@@ -79,6 +82,7 @@ public class Data {
       if (!config_data.isSet("config.claim_cost_multiplier")) {
         config_data.set("config.claim_cost_multiplier", 0.2);
       }
+
       
       config_data.save(config_file);
     } catch (IOException ex) {
