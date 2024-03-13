@@ -33,6 +33,7 @@ public class FactionCompleter implements TabCompleter {
       ArrayList<String> completors = new ArrayList<String>();
       completors.add("leaderboard");
       completors.add("gui");
+      completors.add("borders");
 
       if (player.isOp()) {
         completors.add("admin");

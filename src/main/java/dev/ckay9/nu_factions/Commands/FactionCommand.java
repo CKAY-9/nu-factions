@@ -236,6 +236,10 @@ public class FactionCommand implements CommandExecutor {
     Views.openNavigationMenu(player, faction);
   }
 
+  private void executeBorders(Player player) {
+    this.factions.boarder_revealer.toggleRevealer(player);
+  }
+
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     if (!(sender instanceof Player)) {
@@ -298,6 +302,11 @@ public class FactionCommand implements CommandExecutor {
 
       if (subcommand.contains("gui")) {
         executeGUI(player, faction);
+        return false;
+      }
+
+      if (subcommand.contains("borders")) {
+        executeBorders(player);
         return false;
       }
 
