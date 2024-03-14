@@ -52,6 +52,11 @@ public class Claim {
     return new Vector3(this.starting_positon.x - radius, 0, this.starting_positon.z - radius);
   }
 
+  public static Vector3 convertLocationsToCenterCoordinates(Location starting, Location ending) {
+    int radius = Math.abs(starting.getBlockX() - ending.getBlockX()) / 2;
+    return new Vector3(starting.getBlockX() - radius, 0, starting.getBlockZ() - radius);
+  }
+
   public void changeRadius(Player player, Faction faction, NuFactions factions, int new_radius) {
     int cost = Claim.getCost(new_radius * 2);
     if (cost > faction.faction_power) {
@@ -99,7 +104,6 @@ public class Claim {
     return null;
   }
 
-  // I love loops
   public static boolean doesClaimCollideWithOthers(Location starting, Location ending, NuFactions nu_factions, @Nullable Claim to_ignore) {
     for (int fi = 0; fi < nu_factions.factions.size(); fi++) {
       Faction f = nu_factions.factions.get(fi);
@@ -109,10 +113,16 @@ public class Claim {
           continue;
         }
         Vector3 center_coords = claim.getCenterCoordinates();
-        double distance = Math.hypot((starting.getBlockX() - center_coords.x),
-          (starting.getBlockZ() - claim.getCenterCoordinates().z));
+        Vector3 new_center_coords = convertLocationsToCenterCoordinates(starting, ending);
+        double distance = Math.hypot(
+          (new_center_coords.x - center_coords.x),
+          (new_center_coords.z - center_coords.z)
+        );
         // compensate since radius around a square aint a single radius
-        double radius = Math.hypot(Math.min(Math.abs(center_coords.x - starting.getBlockX()), claim.radius), Math.min(Math.abs(center_coords.z - starting.getBlockZ()), claim.radius));
+        double radius = Math.hypot(
+          Math.min(Math.abs(center_coords.x - new_center_coords.x), claim.radius), 
+          Math.min(Math.abs(center_coords.z - new_center_coords.z), claim.radius)
+        );
         if (distance <= radius) {
           return true;
         }
@@ -135,17 +145,21 @@ public class Claim {
   }
 
   
-
   public static FactionClaim getCurrentClaim(Location player_location, NuFactions nu_factions) {
     for (int fi = 0; fi < nu_factions.factions.size(); fi++) {
       Faction f = nu_factions.factions.get(fi);
       for (int c = 0; c < f.faction_claims.size(); c++) {
         Claim claim = f.faction_claims.get(c);
         Vector3 center_coords = claim.getCenterCoordinates();
-        double distance = Math.hypot((player_location.getBlockX() - center_coords.x),
-          (player_location.getBlockZ() - center_coords.z));
+        double distance = Math.hypot(
+          (player_location.getBlockX() - center_coords.x),
+          (player_location.getBlockZ() - center_coords.z)
+        );
         // compensate since radius around a square aint a single radius
-        double radius = Math.hypot(Math.min(Math.abs(center_coords.x - player_location.getBlockX()), claim.radius), Math.min(Math.abs(center_coords.z - player_location.getBlockZ()), claim.radius));
+        double radius = Math.hypot(
+          Math.min(Math.abs(center_coords.x - player_location.getBlockX()), claim.radius), 
+          Math.min(Math.abs(center_coords.z - player_location.getBlockZ()), claim.radius)
+        );
         if (distance <= radius) {
           return new FactionClaim(f, claim);
         }     
